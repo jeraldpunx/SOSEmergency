@@ -1,0 +1,5 @@
+.noScrollInfoWindow {
+	line-height:1.35;
+	overflow:hidden;
+	white-space:nowrap;
+}
