@@ -13,12 +13,21 @@ Route::get('emergencyCodes', 'UsersController@retrieveEmergencyCodes');
 
 
 
-Route::get('map', 'MapsController@index');
+Route::get('mapView', 'MapsController@mapView');
+Route::get('listView', 'MapsController@listView');
 Route::get('markers', 'MapsController@markers');
-Route::get('getMarkerContactInfo/{id}', 'MapsController@getMarkerContactInfo');
-Route::post('saveMarker', 'MapsController@saveMarker');
+
+
+Route::post('saveMarker', 'MapsController@saveAddMarker');
 Route::get('editMarker/{id}', 'MapsController@editMarker');
-Route::get('deleteMarker', 'MapsController@deleteMarker');
+Route::post('editMarker/{id}', 'MapsController@saveEditMarker');
+Route::post('deleteMarker', 'MapsController@deleteMarker');
+
+Route::get('getMarkerContactInfo/{id}', 'MapsController@getMarkerContactInfo');
+Route::post('editContact/{id}', 'MapsController@saveEditContact');
+Route::post('deleteContact', 'MapsController@deleteContact');
+
+
 
 Route::get('shortest', 'MapsController@shortest');
 
@@ -108,4 +117,13 @@ Route::get('pushMessageS', function(){
 
 	return $response;
 
+});
+
+
+Route::get('testone', function(){
+	return "aw";
+});
+
+Route::post('testtwo', function(){
+	return "SHIT";
 });

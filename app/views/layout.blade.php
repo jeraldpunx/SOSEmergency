@@ -3,24 +3,56 @@
 <head>
 	<title></title>
 	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 	<link href="{{ URL::asset('assets/css/flat-ui.min.css') }}" rel="stylesheet">
-	<link href="{{ URL::asset('assets/css/notifIt.css') }}" rel="stylesheet">
 	<link href="{{ URL::asset('assets/css/myStyle.css') }}" rel="stylesheet">
+	<link href="{{ URL::asset('assets/css/notifIt.css') }}" rel="stylesheet">
+	@yield('style')
+
+	<script type="text/javascript">
+		function init() {
+		    window.addEventListener('scroll', function(e){
+		        var distanceY = window.pageYOffset || document.documentElement.scrollTop,
+		            shrinkOn = 200,
+		            header = document.querySelector("header");
+		        if (distanceY > shrinkOn) {
+		            classie.add(header,"smaller");
+		        } else {
+		            if (classie.has(header,"smaller")) {
+		                classie.remove(header,"smaller");
+		            }
+		        }
+		    });
+		}
+		window.onload = init();
+	</script>
+		
 	
-	<style type="text/css">
-		@yield('style')
-	</style>
 </head>
 <body>
-	<div id="container">
+	<header>
+	    <div class="container clearfix">
+	        <h1 id="logo">
+	            SOSEmergency
+	        </h1>
+	        <nav>
+	            <a href="">Lorem</a>
+	            <a href="">Ipsum</a>
+	            <a href="">Dolor</a>
+	        </nav>
+	    </div>
+	</header><!-- /header -->
+
+	<div id="wrapper">
 		@yield('content')
 	</div>
 	
-	<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
-	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="{{ URL::asset('assets/js/classie.js') }}"></script>
 	<script src="{{ URL::asset('assets/js/flat-ui.min.js') }}"></script>
 	<script src="{{ URL::asset('assets/js/notifIt.js') }}"></script>
-	<script src="{{ URL::asset('assets/js/prettify.js') }}"></script>
+	<script src="{{ URL::asset('assets/js/pace.min.js') }}"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.js"></script>
 	<script src="{{ URL::asset('assets/js/application.js') }}"></script>
 
 	@yield('script')

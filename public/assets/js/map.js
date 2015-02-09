@@ -1,155 +1,283 @@
-var map;
-var infowindow;
-var service;
-var eventListenerActive = false;
-var inputtedMarker;
-
+var map, 
+	geocoder,
+	infowindow,
+	service,
+	eventListenerActive = false,
+	inputtedMarker;
 
 $( window ).load(function() {
 	initialize().done(getMarkers);
 
-	//EDIT MARKERS
-	$("#map-canvas").on('click', 'a.edit', function(){
-		var marker_id 	= $(this).data("id");
-		$.get('http://localhost:8000/editMarker/'+marker_id, function(data) {
-			console.log(data);
-		});
-		// if (confirm('Are you sure you want to edit this marker?')) {
-		//     $.post('http://localhost:8000/editMarker/', {marker_id: marker_id}, function(data) {
-		// 		markersArray[marker_id].setMap(null);
-		// 		markersArray[0] = null; 
-	 //        });
-		// } else {
-		//     // Do nothing!
-		// }
-		
-	});
 
-	var contactNumberCounter = 1;
-	$("#addMoreCN").on('click', function(e) {
-		e.preventDefault();
+	//MARKER LISTENER
+	addMarkerListener = google.maps.event.addListener(map, 'click', function(event){
+		moveMarker(event.latLng);
+		var lat = inputtedMarker.getPosition().lat(),
+			lng = inputtedMarker.getPosition().lng();
 
-		var newdiv = document.createElement('div');
-		newdiv.innerHTML = "Contact Number " + (contactNumberCounter + 1) + " <br><input type='text' name='myContactNumber[]'>";
-		document.getElementById('contactNumber').appendChild(newdiv);
-		contactNumberCounter++;
-	});
+
+		geocoder.geocode({'latLng': new google.maps.LatLng(lat, lng)}, function(results, status) {
+	      if (status == google.maps.GeocoderStatus.OK) {
+	        if (results[1])
+	        	$("#address").val(results[0].formatted_address);
+	      } else {
+	        displayNotifit( "Geocoder failed due to: " + status , true );
+	      }
+	    });
+
+		$("#lat").val(lat);
+		$("#lng").val(lng);
+
+		//reset values per click
+		$("#formTitle").html("Add Marker");
+		$("#rescue_units_id").val("");
+		$("#name").val("");
+		$("#address").val("");
+		$("#email").val("");
+		$("#type").val("hospital");
 	
 
-	//DELETE MARKERS
-	$("#map-canvas").on('click', 'a.delete', function(){
-		var marker_id 	= $(this).data("id");
-		if (confirm('Are you sure you want to delete this marker?')) {
-		    $.post('http://localhost:8000/deleteMarker', {marker_id: marker_id}, function(data) {
-				markersArray[marker_id].setMap(null);
-				markersArray[0] = null; 
-	        });
-		} else {
-		    // Do nothing!
-		}
-		
-	});
-	
-	
-	
-		addMarkerListener = google.maps.event.addListener(map, 'click', function(event){
-			moveMarker(event.latLng);
+		google.maps.event.addListener(inputtedMarker, 'drag', function(event){
+			
 			$("#lat").val(inputtedMarker.getPosition().lat());
 			$("#lng").val(inputtedMarker.getPosition().lng());
 
-
-			google.maps.event.addListener(inputtedMarker, 'drag', function(event){
-				$("#lat").val(inputtedMarker.getPosition().lat());
-				$("#lng").val(inputtedMarker.getPosition().lng());
-			});
-		});
-
-		$("#addMarkerForm").submit(function(e) {
-			e.preventDefault();
-			// if($("#lat").val() != "" && $("#lng").val() != "") {
-				// var name 				= 	$("#name").val(),
-				// 	address 			= 	$("#address").val(),
-				// 	type 				= 	$("#type").val(),
-				// 	email 				= 	$("#email").val(),
-				// 	lat 				= 	$("#lat").val(),
-				// 	lng 				= 	$("#lng").val();
-
-				var name 				= 	"",
-					address 			= 	"",
-					type 				= 	"",
-					email 				= 	"",
-					lat 				= 	"",
-					lng 				= 	"";
-				
-				$.post('http://localhost:8000/saveMarker', {
-						name: name, 
-						address: address, 
-						type: type, 
-						email: email, 
-						lat: lat, 
-						lng: lng
-					}).done( function(data) {
-							console.log(data);
-							if(data.error == true) {
-								var messages = "<ul>";
-								$.each(data.messages, function(index, value) {
-								    messages += "<li>" + value[0] + "</li>";
-								});
-
-								messages += "</ul>";
-
-								displayNotifit( messages , true );
-							} else {
-								displayNotifit( "Successfully added Marker!" , false );
-							}
-
-							// var marker = new google.maps.Marker({
-							// 	position: new google.maps.LatLng(lat,lng),
-							// 	title:name,
-							// 	map:map,
-							// 	icon: '{{ URL::to('/') }}/assets/img/'+type+'.png'
-							// });	
-							// markersArray[data] = marker;
-
-							// google.maps.event.addListener(marker, 'click', (function(marker, data) {
-				   //              return function() {
-				   //                  infowindow.setContent('<a href="#" data-id="'+data+'">Delete</a>');
-				   //                  infowindow.open(map, marker);
-				   //              }
-				   //          })(marker, data));
-				            
-							// $("#name").val("");
-							// $("#address").val("");
-							// $("#type").val("hospital");
-							// $("#email").val("");
-							// $("#lat").val("");
-							// $("#lng").val("");
-				            
-
-							// inputtedMarker.setMap(null);
-							// inputtedMarker = null;
-
-							// alert(data);
-							// console.log(data); 
-		        	}).fail(function(){
-		        		displayNotifit("Failed to connect to server. Please try again later.", true );
-		        	});
-			// }
-
-
+			//reset values per drag
+			$("#formTitle").html("Add Marker");
+			$("#rescue_units_id").val("");
 			$("#name").val("");
 			$("#address").val("");
-			$("#type").val("hospital");
 			$("#email").val("");
-			$("#latLng").val("");
+			$("#type").val("hospital");
 		});
 
+		google.maps.event.addListener(inputtedMarker, 'dragend', function(event){
+			var lat = inputtedMarker.getPosition().lat(),
+				lng = inputtedMarker.getPosition().lng();
+
+			geocoder.geocode({'latLng': new google.maps.LatLng(lat, lng)}, function(results, status) {
+		      if (status == google.maps.GeocoderStatus.OK) {
+		        if (results[1])
+		        	$("#address").val(results[0].formatted_address);
+		      } else {
+		      	displayNotifit( "Geocoder failed due to: " + status , true );
+		      }
+		    });
+		});
+	});
+
+	//CONTACTS MARKERS
+	$("#map-canvas").on('click', 'a.contacts', function(){
+		var marker_id 	= $(this).data("id");
+		$.get('http://localhost:8000/getMarkerContactInfo/'+marker_id)
+			.done( function(data) {
+				if(data.length == 0)
+					$("#modalBodyContact").html("<p><strong>No contacts registered.</strong</p>");
+				else {
+					var table = '<table id="contactsTable" class="display" cellspacing="0" width="100%">';
+
+					$.each(data, function (i, item) {
+						table += '<tr>'+
+									'<td><p data-id="'+item.id+'">'+item.contact_number+'</p></td>'+
+									'<td class="pull-right">'+
+						                '<button type="button" class="btn btn-embossed btn-xs btn-info edit" data-id='+item.id+' data-number='+item.contact_number+'>Edit</button>'+
+						               	'<button type="button" class="btn btn-embossed btn-xs btn-warning delete" data-id='+item.id+'>Delete</button>'+
+						             '</td>'+
+								'</tr>';
+					});
+
+					table += '</table>';
+					$("#modalBodyContact").html(table);
 
 
-	
+					//EDIT CONTACT
+					$("#modalBodyContact").on('click', 'button.edit', function(){
+						var contact_id 		= $(this).data("id");
+						var contact_number 	= $(this).data("number");
+
+						var buttonSave = '<button type="button" class="btn btn-embossed btn-xs btn-success save" data-id='+contact_id+' data-number="'+contact_number+'">Save</button>';
+						$(this).replaceWith(buttonSave);
+
+						var p = $("#modalBodyContact").find("p[data-id='" + contact_id + "']");
+						TBox(p);
+					});
+
+
+					//SAVE CONTACT
+					$("#modalBodyContact").on('click', 'button.save', function(){
+						var contact_id 		= $(this).data("id");
+						var contact_number 	= $(this).data("number");
+
+						
+						var input = $("#modalBodyContact").find("input[data-id='" + contact_id + "']");
+						contact_number = RBox(input, contact_number);
+
+						var buttonEdit = '<button type="button" class="btn btn-embossed btn-xs btn-info edit" data-id='+contact_id+' data-number="'+contact_number+'">Edit</button>';
+						$(this).replaceWith(buttonEdit);
+					});
+
+
+					//DELETE CONTACTS
+					$("#modalBodyContact").on('click', 'button.delete', function(){
+						var contact_id 	= $(this).data("id");
+						var tr = $(this).parents('tr');
+
+						if(confirm("Do you want to delete this contact?")) {
+							$.post('http://localhost:8000/deleteContact', {contact_id: contact_id}).done( function(data) {
+								tr.remove();
+						    	displayNotifit( "Successfully deleted contact!" , false );
+					        }).fail(function(){
+				        		displayNotifit("Failed to connect to server. Please try again later.", true );
+				        	});;
+						}
+					});
+				}
+			}).fail(function(){
+        		$("#modalBodyContact").html("Failed to connect to server. Please try again later.");
+        	});
+	});
+
+
+	//SUBMIT NEW MARKER/EDITTED MARKER
+	$("#markerForm").submit(function(e) {
+		e.preventDefault();
+		var name 				= 	$("#name").val(),
+			address 			= 	$("#address").val(),
+			type 				= 	$("#type").val(),
+			email 				= 	$("#email").val(),
+			lat 				= 	$("#lat").val(),
+			lng 				= 	$("#lng").val(),
+			rescue_units_id 	= 	$("#rescue_units_id").val();
+
+		if(rescue_units_id) {
+			//EDIT MARKER
+			$.post('http://localhost:8000/editMarker/'+rescue_units_id, {
+				name: name, 
+				address: address, 
+				type: type, 
+				email: email, 
+				lat: lat, 
+				lng: lng
+			}).done( function(data) {
+					if(data.error == true) {
+						var messages = "";
+							messages += "<strong>Failed to save changes</strong><br>";
+						$.each(data.messages, function(index, value) {
+						    messages += " - " + value[0] + "<br>";
+						});
+
+						displayNotifit( messages , true );
+					} else {
+						displayNotifit( "Successfully edited marker: <b>"+name+"</b>!" , false );
+						infowindow.close();
+						var marker = markersArray[rescue_units_id];
+						marker.setOptions({
+							title 	: 	name,
+							map 	: 	map,
+							icon 	: 	'assets/img/'+type+'.png'
+						});
+						
+						google.maps.event.addListener(marker, 'click', (function(marker, rescue_units_id) {
+			                return function() {
+			                    infowindow.setContent('<div class="noScrollInfoWindow">'+
+							                    			'<div><b>'+name+'</b></div>'+
+							                    			'<div>'+address+'</div>'+
+							                    			'<div>'+email+'</div>'+
+							                    			'<div class="infoButtons">'+
+							                    				'<a class="contacts btn btn-embossed btn-primary btn-xs" href="#" data-id="'+rescue_units_id+'" data-toggle="modal" data-target="#contactsMarkerModal">Contacts</a> '+         				
+							                    				'<a class="edit btn btn-embossed btn-info btn-xs" href="#markerArea" data-id="'+rescue_units_id+'">Edit</a> '+
+							                    				'<a class="delete btn btn-embossed btn-danger btn-xs" href="" data-id="'+rescue_units_id+'" data-name="'+name+'" data-toggle="modal" data-target="#deleteMarkerModal">Delete</a>'+
+							                    			'</div></div>');
+
+			                    infowindow.open(map, marker);
+			                }
+			            })(marker, rescue_units_id));
+
+			            if(inputtedMarker) {
+							inputtedMarker.setMap(null);
+							inputtedMarker = null;
+						}
+						$("#name").val(""),
+						$("#address").val(""),
+						$("#type").val("hospital"),
+						$("#email").val(""),
+						$("#lat").val(""),
+						$("#lng").val(""),
+						$("#rescue_units_id").val("");
+					}
+        	}).fail(function(){
+        		displayNotifit("Failed to connect to server. Please try again later.", true );
+        	});
+		} else {
+			//ADD NEW MARKER
+			$.post('http://localhost:8000/saveMarker', {
+				name: name, 
+				address: address, 
+				type: type, 
+				email: email, 
+				lat: lat, 
+				lng: lng,
+				status: 1
+			}).done( function(data) {
+					if(data.error == true) {
+						var messages = "";
+							messages += "<strong>Failed to add marker</strong><br>";
+						$.each(data.messages, function(index, value) {
+						    messages += " - " + value[0] + "<br>";
+						});
+
+						displayNotifit( messages , true );
+					} else {
+						var rescue_units_id = data.id;
+
+						displayNotifit( "Successfully added marker: <b>"+name+"</b>!" , false );
+						infowindow.close();
+						var marker = new google.maps.Marker({
+							position 	: 		new google.maps.LatLng(lat,lng),
+							title 		: 		name,
+							map 		: 		map,
+							icon 		: 		"assets/img/"+type+".png"
+						});	
+						
+						markersArray[rescue_units_id] = marker;
+						
+						google.maps.event.addListener(marker, 'click', (function(marker, rescue_units_id) {
+			                return function() {
+			                    infowindow.setContent('<div class="noScrollInfoWindow">'+
+							                    			'<div><b>'+name+'</b></div>'+
+							                    			'<div>'+address+'</div>'+
+							                    			'<div>'+email+'</div>'+
+							                    			'<div class="infoButtons">'+
+							                    				'<a class="contacts btn btn-embossed btn-primary btn-xs" href="#" data-id="'+rescue_units_id+'" data-toggle="modal" data-target="#contactsMarkerModal">Contacts</a> '+         				
+							                    				'<a class="edit btn btn-embossed btn-info btn-xs" href="#markerArea" data-id="'+rescue_units_id+'">Edit</a> '+
+							                    				'<a class="delete btn btn-embossed btn-danger btn-xs" href="" data-id="'+rescue_units_id+'" data-name="'+name+'" data-toggle="modal" data-target="#deleteMarkerModal">Delete</a>'+
+							                    			'</div></div>');
+
+			                    infowindow.open(map, marker);
+			                }
+			            })(marker, rescue_units_id));
+
+			            if(inputtedMarker) {
+							inputtedMarker.setMap(null);
+							inputtedMarker = null;
+						}
+						$("#name").val(""),
+						$("#address").val(""),
+						$("#type").val("hospital"),
+						$("#email").val(""),
+						$("#lat").val(""),
+						$("#lng").val(""),
+						$("#rescue_units_id").val("");
+					}
+        	}).fail(function(){
+        		displayNotifit("Failed to connect to server. Please try again later.", true );
+        	});
+		}
+	});
 });
 
 function initialize() {
+	geocoder = new google.maps.Geocoder();
 	var myStyles =[
 	    {
 	        featureType: "transit.station.bus",
@@ -212,23 +340,58 @@ function getMarkers() {
 
 			google.maps.event.addListener(markersArray[data[key].rescue_units_id], 'click', (function(marker, key) {
                 return function() {
-                	var units = "";
-                	for (var keyContact in data[key].username) {
-                		units += ("<li data-id="+keyContact+">"+data[key].username[keyContact]+" ("+data[key].contact_number[keyContact]+")</li>");
-                	}
                     infowindow.setContent('<div class="noScrollInfoWindow">'+
                     			'<div><b>'+data[key].name+'</b></div>'+
                     			'<div>'+data[key].address+'</div>'+
-                    			'<div class="markerContactNumbers"><i>Contact Number</i><ul>'+units+'</ul></div>'+
+                    			'<div>'+data[key].email+'</div>'+
                     			'<div class="infoButtons">'+
-                    				'<a class="edit btn btn-embossed btn-info btn-xs" href="#" data-id="'+data[key].rescue_units_id+'">Edit</a> '+
-                    				'<a class="delete btn btn-embossed btn-danger btn-xs" href="#" data-id="'+data[key].rescue_units_id+'">Delete</a>'+
+                    				'<a class="contacts btn btn-embossed btn-primary btn-xs" href="#" data-id="'+data[key].rescue_units_id+'" data-toggle="modal" data-target="#contactsMarkerModal">Contacts</a> '+         				
+                    				'<a class="edit btn btn-embossed btn-info btn-xs" href="#markerArea" data-id="'+data[key].rescue_units_id+'">Edit</a> '+
+                    				'<a class="delete btn btn-embossed btn-danger btn-xs" href="" data-id="'+data[key].rescue_units_id+'" data-name="'+data[key].name+'" data-toggle="modal" data-target="#deleteMarkerModal">Delete</a>'+
                     			'</div></div>');
                     infowindow.open(map, marker);
                 }
             })(marker, key));
 
+			//EDIT MARKERS
+			$("#map-canvas").on('click', 'a.edit', function(event){
 
+				var marker_id 	= $(this).data("id");
+				
+				$.get('http://localhost:8000/editMarker/'+marker_id, function(data) {
+
+					$("#rescue_units_id").val(marker_id);
+					$("#formTitle").html("Edit Marker");
+					$("#name").val(data.name);
+					$("#address").val(data.address);
+					$("#email").val(data.email);
+					$("#lat").val(data.lat);
+					$("#lng").val(data.lng);
+					$("#type").val(data.type);
+					if(inputtedMarker) {
+						inputtedMarker.setMap(null);
+						inputtedMarker = "";
+					}
+				});
+			});
+
+			//DELETE MARKERS
+			$("#map-canvas").on('click', 'a.delete', function(e){
+				var marker_id 	= $(this).data("id"),
+					marker_name	= $(this).data("name");
+
+				$(".modal-header #deleteMarkerModalLabel").text("Delete marker: "+marker_name.toUpperCase());
+				$(".modal-footer #deleteModalButton").attr('data-id', marker_id); 
+
+			});
+			$("#deleteMarkerModal").on('click', '#deleteModalButton', function(){
+				var marker_id 	= $(this).data("id");
+				$.post('http://localhost:8000/deleteMarker', {marker_id: marker_id}, function(data) {
+				    	displayNotifit( "Successfully deleted marker!" , false );
+						markersArray[marker_id].setMap(null);
+						markersArray[marker_id] = null;
+			        });
+			});
 
 		}
 	});
@@ -256,10 +419,51 @@ function displayNotifit( msg , errorStatus ) {
 		position: "right",
 		bgcolor: bgcolor,
 		multiline: true,
-		autohide: false
+		autohide: true
 	});
 }
 
+
+// P TO TEXTBOX
+function TBox(obj) {
+        var id 						= $(obj).attr("data-id");
+        var input 					= $('<input />', { 'type': 'text', 'class': 'text_box', 'value': $(obj).html(), 'data-id': id });
+        $(obj).replaceWith(input);
+        input.focus();
+}
+
+//TEXTBOX TO P
+function RBox(obj, oldNumber) {
+    var id 				= $(obj).attr("data-id");
+    var contact_number 	= $(obj).val();
+
+
+    $.post('http://localhost:8000/editContact/'+id, {
+				contact_number: contact_number
+			}).done( function(data) {
+					if(data.error == true) {
+						var messages = "";
+							messages += "<strong>Failed to save changes</strong><br>";
+						$.each(data.messages, function(index, value) {
+						    messages += " - " + value[0] + "<br>";
+						});
+						contact_number 	= oldNumber;
+						displayNotifit( messages , true );
+					} else {
+						contact_number = $(obj).val();
+						displayNotifit( "Successfully edited <b>contact number</b>!" , false );
+					}
+					var input = $('<p />', { 'data-id': id, 'html': contact_number });
+					$(obj).replaceWith(input);
+					return contact_number;
+			}).fail(function(){
+				contact_number 	= oldNumber;
+        		displayNotifit("Failed to connect to server. Please try again later.", true );
+        		var input = $('<p />', { 'data-id': id, 'html': contact_number });
+			    $(obj).replaceWith(input);
+			    return contact_number;
+        	});
+}
 
 function xhr_get(url) {
 	return $.ajax({
