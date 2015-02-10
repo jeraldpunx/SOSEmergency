@@ -9,7 +9,7 @@
 		<div class="row">
 			<div class="container">
 				<h2 class="">Map View</h2>
-				<a class="pull-right btn btn-embossed btn-danger" href="listView">List View</a>
+				<a class="pull-right btn btn-embossed btn-danger" href="listview">List View</a>
 				<a class="pull-right btn btn-embossed btn-danger active" href="#">Map View</a>
 			</div>
 		</div>
@@ -72,25 +72,6 @@
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-embossed btn-danger" data-dismiss="modal">Close</button>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<!-- deleteModal -->
-		<div class="modal fade" id="deleteMarkerModal" tabindex="-1" role="dialog" aria-labelledby="deleteMarkerModalLabel" aria-hidden="true">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title" id="deleteMarkerModalLabel"></h4>
-					</div>
-					<div class="modal-body">
-						<p>Are you sure you want to delete this marker?</p>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-						<button id="deleteModalButton" type="button" data-dismiss="modal" class="btn btn-danger" data-id="0">Delete?</button>
 					</div>
 				</div>
 			</div>

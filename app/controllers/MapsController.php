@@ -182,49 +182,31 @@ class MapsController extends \BaseController {
 
 	public function shortest()
 	{
-		$lat 		= 	"10.287495055675077";
-		$lng 		= 	"123.86252403259277";
-		
-		// $markers = RescueUnit::select('rescue_units.id as rescue_units_id', 'name', 'address', 'lat', 'lng', 'email', 'type', 'status', 'contact_number', 'deviceID')
-		// 					->leftJoin('ru_contacts', function($leftJoin){
-		// 							$leftJoin->on('ru_contacts.ru_id', '=', 'rescue_units.id');
-							// })->whereIn( 'rescue_units.id', function($ru_ec){ 
-							// 	$ru_ec->select('ru_id')
-							// 		  ->from('ru_ec')
-							// 		  ->where('ec_id', '=', function($emergency_codes){
-							// 		  		$emergency_codes->select('id')
-							// 		  						->from('emergency_codes')
-							// 		  						->where('id', '=', 6);
-							// 		  });
-							// })->where('status', '!=', 0)->setBindings([$lat, $lng, $lat])->get();
-		// return $markers;
+		$pu_id 			= 	Input::get('pu_id');
+		$ec_id 			= 	Input::get('ec_id');
+		$latOrigin 		= 	Input::get('latOrigin');
+		$lngOrigin 		= 	Input::get('lngOrigin');
 
-		$latOrigin 		= 	10.3099568;
-		$lngOrigin 		= 	123.8934193;
 		$limit 			= 	3;
-		$ec_id 			= 	6;
-		$origin 		= 	$lat . "," . $lng;
+		$origin 		= 	$latOrigin . "," . $lngOrigin;
 
+		//QUERY GET DISTANCE BY CIRCLE
 		$markersByRadius = DB::select(
-           DB::raw(
-           	"SELECT rescue_units.id as 'rescue_units_id', name, address, lat, lng, email, type, status, 
+           	DB::raw(
+           		"SELECT rescue_units.id as 'rescue_units_id', name, address, lat, lng, email, type, status, 
            			( 6371 * acos( cos( radians(:latOne) ) * cos( radians( lat ) ) * cos( radians( lng ) - radians(:lng) ) + sin( radians(:latTwo) ) * sin( radians( lat ) ) ) ) AS distance 
-           	FROM rescue_units WHERE rescue_units.id IN (
+           		FROM rescue_units WHERE rescue_units.id IN (
            								SELECT ru_id FROM ru_ec WHERE ec_id = (
            										SELECT id FROM emergency_codes WHERE ID = :ec_id
            								)
            							) AND status = 1 order by distance LIMIT 3"
-        ), array(
-        	'latOne' 	=> 	$latOrigin,
-        	'lng' 		=> 	$lngOrigin,
-        	'latTwo' 	=> 	$latOrigin,
-        	'ec_id' 	=> 	$ec_id
+        	), array(
+        		'latOne' 	=> 	$latOrigin,
+        		'lng' 		=> 	$lngOrigin,
+        		'latTwo' 	=> 	$latOrigin,
+        		'ec_id' 	=> 	$ec_id
         ));
 
-		// $report = Report::find(1);
-		// echo date('Y-m-d H:i:s', strtotime($report->date_reported. "+1 minutes"));
-		// echo "<br>";
-		// echo date('Y-m-d H:i:s', strtotime("+30 minutes"));
 
         //GET KM BY USING ROAD
 		for($i=0; $i<$limit; $i++) {
@@ -239,80 +221,33 @@ class MapsController extends \BaseController {
 		    return $a->distanceByKM < $b->distanceByKM ? -1 : 1; 
 		});
 
-		return $markersByRadius[0]->rescue_units_id;
+		$respondentArray 	= 	array();
+		foreach ($markersByRadius as $markers => $value) {
+			$respondentID 	= 	$markersByRadius[$markers]->rescue_units_id;
+			array_push($respondentArray, $respondentID);
+		}
 
 
-		// $result = helper::sendGCM($lat, $lng, $nearestMarker[0]->id, 'ru');
-		// // return $result;
-
-		// // // var_dump($nearestMarker);
-		// $returnedValue = array(
-	 //        	'error'		=>	false
-		// );
-		// return $result;
-
+		//SENDNOW
+		helper::checkRespond($pu_id, $respondentArray, $ec_id, $latOrigin, $lngOrigin);
 	}
 
-	function pushMessage() {
-		// Replace with the real server API key from Google APIs
-		$apiKey = "AIzaSyB4VbRPOEzAiJ_wMPWY-Bvh3H5I6LqQ5x0";
+	public function responseEmergency() {
 
-	    // Replace with the real client registration IDs
-		$registrationIDs = array( 
-			"APA91bElZtomNwGwmz-ZhVyMLkue_enY8jmiK6mnIea9FxXa5GnS5K2rE3Nhx0RY9lyJ5Kt23lM2896cpi8kKhe8OvQ2zRkNHLhdwxGOmPTrbTDR6nfPdtfOvM5yz-jvZ_AavIYoek-xzi0hW9FFMt1_2ooYaak7ZYD_VngsDaiHfFzfVZRdFmM", 
-			"APA91bE0STylonk5LEEhiFDVQAAUGYaVpqrS8x1QjYWrZAOQVI4lRlSoYk9dxMtWbxYBkmZxhi1ujHMJAUPK0d9D5jlyB4OaX6i62idHKc38sXl6jwrH-UQ19z4yu5ET832rIrbfFNhorTr7vKBii_R-7E9nfXJFf1RpjlQVHg0TevLQie6XYKw", 
-			"APA91bGVC6RIgEy11zDZ3aql9gcxC_7FB33w4w-0oJ08fH_FTcHCqyz3G1U2mDATHsC6aoS2pmpS5jXpNMfDLkl_OOdeoPLohSYdGUrv_z_AvE6Or20lFm61OaRGDpnk1FYzLFSqgFImvk_NfZmoya1DSHBIfm1JUUKF15oAUUm8iDc5ifuKyHY", 
-			"APA91bEEI_a6aA_orfFYDL_Qt7S-AZ00MUu-pul_GbsS2bJg18Olj8pYEU-jzHyX8aO8M0GCfoHxh9iHUvLwLt6NzlQWn1yWd-gpDIjTnyvTyV6gGm0UO1w0TQ4MYHnGeiiTqqUom33s0xbs7uQnT3ADTgdczL3p0w", 
-			"APA91bE9SqKmE5gY59YubTYQWYUP_0--wwgRzUMonpu-5P4vk4TBQIoZvaV69wfbfVetrzuQehl2LHI11-UuoPnodRUbNMUYw5km4DO4nqy2QRRFbjItPtRC9bsfUEPIHV5nMrmNgEWFg4upBhAXdwUB7l5AnU8tzQ", 
-			"APA91bFpi8sK-nKrSKELErm7YCl6g12bxyVYn-OwUH33dZy7a3q9W6I6SV6sPJz9h2jQqBSUPYowXH60aEuRpuZ0mS7GsPkI5GZu-JnY6kWJ85dhv8xp8c9IqWCGKdroclMLDTqdW-6rRPhEHLIoqTCykqeZQvjBWQ", 
-			"APA91bETNfuk7IubFPFz8MSQiBAIEZ0diwv8bBG5bHIFrcahrCz8nFuOvFdnMOexeP-6e4iyDn7NVGgTOGx9o_ld8J6cVdVVSBP6tb0_saccxJJIm8Jvd-Nc_myese9BWEb91-FS4fnt0zhydrnxtLK0Ft6_xHslHA", 
-			"APA91bEhRrMOFW7iRzmI6ym7ICt8GQFovicTWyx7AfNoDmJ-JJQ7nl0zJn0XIowY_u6IpWdPFhR8TVM6j4YuLXTWV0BcoOHypgrOq2K3BYj5Tk_wTZT4I7NG_YSkOhDmKu2mz-L6C8UFphvYyTN_p-2Wv7gQl-xfTw","APA91bHukJ65aY54Ip5LIVp4RMgPegjN-FM6Q5loB3Wa5-dDFjq4J7qgVocN8cGb4yFPgmLuS5O2yBi8Ojrv4jAZ2l8l7lyuTHgikkZvp8Q_gPhZO1A76rYbqrh2bWQG63NrE6_xweRPWfsGEV06if4-HhtpGd5CxA");
+		$ru_contacts 	= 	Report::find(Input::get('report_id'));
+		if(!$ru_contacts->date_responded) {
+			$ru_contacts->date_responded 		= 	date('Y-m-d H:i:s');
+			$ru_contacts->save();
 
-	    // Message to be sent
-	    $name = "kevin";
-	    $code = "red";
-		$title = "SOSEmergency!!!";
-		$message =  "Emergency needs!";
+			$returnedValue = array(
+					'accepted' 	=> 	true
+				);
+		} else {
+			$returnedValue = array(
+					'accepted' 	=> 	false
+				);
+		}
 
-
-	    // Set POST variables
-		$url = 'https://android.googleapis.com/gcm/send';
-
-		$payload = array(
-			'registration_ids' 	=> 	$registrationIDs,
-			'data' => array("message" 	=> 	$message, 
-							"title" 	=> 	$title,
-							"name"		=>	"Kevin Rey Tabada",
-							"lat" 		=> 	"12.00",
-							"lng"		=> 	"13.00"
-						));
-		$headers = array(
-			'Authorization: key=' . $apiKey,
-			'Content-Type: application/json'
-			);
-
-	    // Open connection
-		$ch = curl_init();
-
-	    // Set the URL, number of POST vars, POST data
-		curl_setopt( $ch, CURLOPT_URL, $url);
-		curl_setopt( $ch, CURLOPT_POST, true);
-		curl_setopt( $ch, CURLOPT_HTTPHEADER, $headers);
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true);
-	    //curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( $fields));
-
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-	    // curl_setopt($ch, CURLOPT_POST, true);
-	    // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode( $payload));
-
-	    // Execute post
-		$result = curl_exec($ch);
-
-	    // Close connection
-		curl_close($ch);
-		echo $result;
+		return $returnedValue;
 	}
-
-
 }

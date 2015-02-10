@@ -66,6 +66,21 @@ $( window ).load(function() {
 		});
 	});
 
+	//DELETE MARKERS
+	$("#map-canvas").on('click', 'a.delete', function(e){
+
+		var marker_id 	= $(this).data("id"),
+			marker_name	= $(this).data("name");
+
+		if(confirm("Delete marker: "+marker_name.toUpperCase()+"?")) {
+			$.post('http://localhost:8000/deleteMarker', {marker_id: marker_id}, function(data) {
+		    	displayNotifit( "Successfully deleted marker!" , false );
+				markersArray[marker_id].setMap(null);
+				markersArray[marker_id] = null;
+	        });
+		}
+	});
+
 	//CONTACTS MARKERS
 	$("#map-canvas").on('click', 'a.contacts', function(){
 		var marker_id 	= $(this).data("id");
@@ -352,48 +367,28 @@ function getMarkers() {
                     infowindow.open(map, marker);
                 }
             })(marker, key));
-
-			//EDIT MARKERS
-			$("#map-canvas").on('click', 'a.edit', function(event){
-
-				var marker_id 	= $(this).data("id");
-				
-				$.get('http://localhost:8000/editMarker/'+marker_id, function(data) {
-
-					$("#rescue_units_id").val(marker_id);
-					$("#formTitle").html("Edit Marker");
-					$("#name").val(data.name);
-					$("#address").val(data.address);
-					$("#email").val(data.email);
-					$("#lat").val(data.lat);
-					$("#lng").val(data.lng);
-					$("#type").val(data.type);
-					if(inputtedMarker) {
-						inputtedMarker.setMap(null);
-						inputtedMarker = "";
-					}
-				});
-			});
-
-			//DELETE MARKERS
-			$("#map-canvas").on('click', 'a.delete', function(e){
-				var marker_id 	= $(this).data("id"),
-					marker_name	= $(this).data("name");
-
-				$(".modal-header #deleteMarkerModalLabel").text("Delete marker: "+marker_name.toUpperCase());
-				$(".modal-footer #deleteModalButton").attr('data-id', marker_id); 
-
-			});
-			$("#deleteMarkerModal").on('click', '#deleteModalButton', function(){
-				var marker_id 	= $(this).data("id");
-				$.post('http://localhost:8000/deleteMarker', {marker_id: marker_id}, function(data) {
-				    	displayNotifit( "Successfully deleted marker!" , false );
-						markersArray[marker_id].setMap(null);
-						markersArray[marker_id] = null;
-			        });
-			});
-
 		}
+		//EDIT MARKERS
+		$("#map-canvas").on('click', 'a.edit', function(event){
+
+			var marker_id 	= $(this).data("id");
+			
+			$.get('http://localhost:8000/editMarker/'+marker_id, function(data) {
+
+				$("#rescue_units_id").val(marker_id);
+				$("#formTitle").html("Edit Marker");
+				$("#name").val(data.name);
+				$("#address").val(data.address);
+				$("#email").val(data.email);
+				$("#lat").val(data.lat);
+				$("#lng").val(data.lng);
+				$("#type").val(data.type);
+				if(inputtedMarker) {
+					inputtedMarker.setMap(null);
+					inputtedMarker = "";
+				}
+			});
+		});
 	});
 }
 

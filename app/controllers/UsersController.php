@@ -1,5 +1,5 @@
 <?php
-date_default_timezone_set('Asia/Manila');
+
 class UsersController extends \BaseController {
 	//REGISTER
 	public function create()
@@ -28,11 +28,11 @@ class UsersController extends \BaseController {
 	    if($validation->passes()) {
 	    	$person_unit = new PersonUnit;
 	    	$person_unit->name				=	Input::get('name');
-	    	$person_unit->home_lat			=	Input::get('home_lat');
-	    	$person_unit->home_lng			=	Input::get('home_lng');
 	    	$person_unit->birth_date		=	Input::get('birth_date');
 	    	$person_unit->gender 			=	Input::get('gender');
 	    	$person_unit->email 			=	Input::get('email');
+	    	$person_unit->contact_number			=	Input::get('contact_number');
+			$person_unit->deviceID					=	Input::get('deviceID');
 	    	$person_unit->save();
 
 	    	$user = new User;
@@ -40,8 +40,6 @@ class UsersController extends \BaseController {
 	    	$user->type 					=	Input::get('type');
 			$user->username 				=	Input::get('username');
 			$user->password 				=	Hash::make(Input::get('password'));
-			$user->contact_number			=	Input::get('contact_number');
-			$user->deviceID					=	Input::get('deviceID');
 			$user->save();
 
 			$returnedValue = array(

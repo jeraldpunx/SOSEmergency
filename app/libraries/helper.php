@@ -16,40 +16,76 @@ class helper {
 		}
     }
 
-    public static function sendGCM($lat, $lng, $rescue_id, $user_type) {
-    	$devices = User::select('deviceID')
-    			   ->where('puid_ruid', '=', $rescue_id)
-    			   ->where('type', '=', $user_type)
-    			   ->get();
+    public static function checkRespond($pu_id, $respondentArray, $ec_id, $latOrigin, $lngOrigin) {
+    	$timeLimit 	= 	19;
 
+    	$report 				= 	new Report();
+    	$report->pu_id 		 	= 	$pu_id;
+    	$report->ru_id 			= 	$respondentArray[0];
+    	$report->ec_id 			= 	$ec_id;
+    	$report->lat 			= 	$latOrigin;
+    	$report->lng 			= 	$lngOrigin;
+    	$report->date_reported 	= 	date('Y-m-d H:i:s');
+    	$report->save();
+    	helper::sendGCMToRU($respondentArray[0], $pu_id, $ec_id, $latOrigin, $lngOrigin);
+
+    	foreach (array_slice($respondentArray, 1) as $key => $value) {
+    		sleep($timeLimit);
+    		$status 	=  	Report::find($report->id)->date_responded;
+    		if(!$status) {
+    			$report 				= 	new Report();
+	    		$report->pu_id 		 	= 	$pu_id;
+	    		$report->ru_id 			= 	$value;
+	    		$report->ec_id 			= 	$ec_id;
+	    		$report->lat 			= 	$latOrigin;
+	    		$report->lng 			= 	$lngOrigin;
+	    		$report->date_reported 	= 	date('Y-m-d H:i:s');
+	    		$report->save();
+	    		helper::sendGCMToRU($value, $pu_id, $ec_id, $latOrigin, $lngOrigin);
+    		} else {
+    			break;
+    		}
+    	}
+    }
+
+    public static function sendGCMToRU($ru_id, $pu_id, $ec_id, $latOrigin, $lngOrigin) {
+
+    	$devices 		= 	RUContact::select('deviceID')
+    			   				->where('ru_id', '=', $ru_id)
+    			   				->get();
+
+    	//Message to be sent
+    	$title 			=  	"SOSEmergency!!!";
+    	$personName 	= 	PersonUnit::select('name')
+    							->where('id', '=', $pu_id)
+    							->get()[0]->name;
+
+    	$emergencyDesc 	= 	EmergencyCode::select('description')
+    							->where('id', '=', $ec_id)
+    							->get()[0]->description;
+
+    	//Sent to these devices
     	$registrationIDs = array();
-
     	foreach ($devices as $key => $value) {
     		$regID = $devices[$key]->deviceID;
     		array_push($registrationIDs, $regID);
     	}
 
+    	$payload = array(
+			'registration_ids' 	=> 	$registrationIDs,
+			'data' 				=> array("message" 		=> 	$emergencyDesc, 
+										 "title" 		=> 	$title,
+										 "name"			=>	$personName,
+										 "latOrigin" 	=> 	$latOrigin,
+										 "lngOrigin"	=> 	$lngOrigin,
+                                         "reportID"     =>  $reportID
+									)
+				);
+
     	// Replace with the real server API key from Google APIs
 		$apiKey = "AIzaSyB4VbRPOEzAiJ_wMPWY-Bvh3H5I6LqQ5x0";
-
-	    // Message to be sent
-	    $name = "kevin";
-	    $code = "red";
-		$title = "SOSEmergency!!!";
-		$message =  "Emergency needs!";
-
-
-	    // Set POST variables
+		// Set POST variables
 		$url = 'https://android.googleapis.com/gcm/send';
-
-		$payload = array(
-			'registration_ids' 	=> 	$registrationIDs,
-			'data' => array("message" 	=> 	$message, 
-							"title" 	=> 	$title,
-							"name"		=>	"Kevin Rey Tabada",
-							"lat" 		=> 	$lat,
-							"lng"		=> 	$lng
-						));
 		$headers = array(
 			'Authorization: key=' . $apiKey,
 			'Content-Type: application/json'
@@ -71,6 +107,5 @@ class helper {
 
 	    // Close connection
 		curl_close($ch);
-		echo $result;
     }
 }

@@ -23,7 +23,7 @@
 			<div class="container">
 				<h2 class="">List View</h2>
 				<a class="pull-right btn btn-embossed btn-danger active" href="#">List View</a>
-				<a class="pull-right btn btn-embossed btn-danger" href="mapView">Map View</a>
+				<a class="pull-right btn btn-embossed btn-danger" href="mapview">Map View</a>
 			</div>
 		</div>
 
