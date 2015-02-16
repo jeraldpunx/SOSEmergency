@@ -115,9 +115,6 @@ class helper {
 		$person 		=   PersonUnit::select('*')
 									->where('id', '=', $pu_id)
 									->get()[0];
-		$emergency 		= 	EmergencyCode::select('*')
-								->where('id', '=', $ec_id)
-								->get()[0];
 		//Sent to these devices
 		$registrationIDs = array();
 		array_push($registrationIDs, $person->deviceID);
@@ -156,6 +153,7 @@ class helper {
 
 		// Close connection
 		curl_close($ch);
+
 		echo $result;
 	}
 
