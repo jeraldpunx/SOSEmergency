@@ -1,13 +1,10 @@
 @extends('layout')
 
-@section('style')
-	<link href="//cdn.datatables.net/1.10.4/css/jquery.dataTables.min.css" rel="stylesheet">
-@stop
 
 @section('content')
 	<div id="main">
 		<div class="row">
-			<div class="container">
+			<div class="container titleArea">
 				<h2 class="">Map View</h2>
 				<a class="pull-right btn btn-embossed btn-danger" href="listview">List View</a>
 				<a class="pull-right btn btn-embossed btn-danger active" href="#">Map View</a>
@@ -84,7 +81,7 @@
 	      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVd8ePTMrvKg0Rcic-k4MtdmI4-RQXDZU&libraries=places&callback=initialize">
 	    </script>
 	    
-	<script src="{{ URL::asset('assets/js/map.js') }}"></script>
+	<script src="{{ URL::asset('assets/js/mapview.js') }}"></script>
 	<script src="{{ URL::asset('assets/js/classie.js') }}"></script>
 @stop
 

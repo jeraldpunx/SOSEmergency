@@ -33,7 +33,7 @@
 	<header>
 	    <div class="container clearfix">
 	        <h1 id="logo">
-	            SOSEmergency
+	            <a href="{{ URL::route('home') }}"><img src="assets/img/logo.png" style="height: 100%;"></a>
 	        </h1>
 	        <nav>
 	            <a href="">Lorem</a>
@@ -46,6 +46,12 @@
 	<div id="wrapper">
 		@yield('content')
 	</div>
+
+	<footer>
+	    John Carlo Mamites | Jerald Patalinghug | Kevin Rey Tabada
+	    <br>
+	    Copyright SOS Emergency Response &copy; 2015 TMP&trade;.
+  	</footer>
 	
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 	<script src="{{ URL::asset('assets/js/classie.js') }}"></script>

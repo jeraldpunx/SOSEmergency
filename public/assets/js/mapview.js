@@ -73,7 +73,7 @@ $( window ).load(function() {
 			marker_name	= $(this).data("name");
 
 		if(confirm("Delete marker: "+marker_name.toUpperCase()+"?")) {
-			$.post('http://localhost:8000/deleteMarker', {marker_id: marker_id}, function(data) {
+			$.post('/deleteMarker', {marker_id: marker_id}, function(data) {
 		    	displayNotifit( "Successfully deleted marker!" , false );
 				markersArray[marker_id].setMap(null);
 				markersArray[marker_id] = null;
@@ -84,7 +84,7 @@ $( window ).load(function() {
 	//CONTACTS MARKERS
 	$("#map-canvas").on('click', 'a.contacts', function(){
 		var marker_id 	= $(this).data("id");
-		$.get('http://localhost:8000/getMarkerContactInfo/'+marker_id)
+		$.get('/getMarkerContactInfo/'+marker_id)
 			.done( function(data) {
 				if(data.length == 0)
 					$("#modalBodyContact").html("<p><strong>No contacts registered.</strong</p>");
@@ -138,7 +138,7 @@ $( window ).load(function() {
 						var tr = $(this).parents('tr');
 
 						if(confirm("Do you want to delete this contact?")) {
-							$.post('http://localhost:8000/deleteContact', {contact_id: contact_id}).done( function(data) {
+							$.post('/deleteContact', {contact_id: contact_id}).done( function(data) {
 								tr.remove();
 						    	displayNotifit( "Successfully deleted contact!" , false );
 					        }).fail(function(){
@@ -166,7 +166,7 @@ $( window ).load(function() {
 
 		if(rescue_units_id) {
 			//EDIT MARKER
-			$.post('http://localhost:8000/editMarker/'+rescue_units_id, {
+			$.post('/editMarker/'+rescue_units_id, {
 				name: name, 
 				address: address, 
 				type: type, 
@@ -225,7 +225,7 @@ $( window ).load(function() {
         	});
 		} else {
 			//ADD NEW MARKER
-			$.post('http://localhost:8000/saveMarker', {
+			$.post('/saveMarker', {
 				name: name, 
 				address: address, 
 				type: type, 
@@ -373,7 +373,7 @@ function getMarkers() {
 
 			var marker_id 	= $(this).data("id");
 			
-			$.get('http://localhost:8000/editMarker/'+marker_id, function(data) {
+			$.get('/editMarker/'+marker_id, function(data) {
 
 				$("#rescue_units_id").val(marker_id);
 				$("#formTitle").html("Edit Marker");
@@ -433,7 +433,7 @@ function RBox(obj, oldNumber) {
     var contact_number 	= $(obj).val();
 
 
-    $.post('http://localhost:8000/editContact/'+id, {
+    $.post('/editContact/'+id, {
 				contact_number: contact_number
 			}).done( function(data) {
 					if(data.error == true) {

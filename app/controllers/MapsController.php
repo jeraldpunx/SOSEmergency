@@ -207,15 +207,12 @@ class MapsController extends \BaseController {
         		'ec_id' 	=> 	$ec_id
         ));
 
-
         //GET KM BY USING ROAD
-		for($i=0; $i<$limit; $i++) {
-			$destLatLng 			= 	$markersByRadius[$i]->lat . "," . $markersByRadius[$i]->lng;
-			$distanceByKM			=	helper::calculateKM($origin,$destLatLng);
-
-			$markersByRadius[$i]->distanceByKM = $distanceByKM;
-		}
-
+        foreach ($markersByRadius as $key => $value) {
+        	$destLatLng 	= 	$value->lat . "," . $value->lng;
+        	$distanceByKM			=	helper::calculateKM($origin,$destLatLng);
+			$value->distanceByKM = $distanceByKM;
+        }
 		//SORT LOW TO HIGH BY KM
 		usort($markersByRadius, function($a, $b) { 
 		    return $a->distanceByKM < $b->distanceByKM ? -1 : 1; 
@@ -234,10 +231,11 @@ class MapsController extends \BaseController {
 
 	public function responseEmergency() {
 
-		$ru_contacts 	= 	Report::find(Input::get('report_id'));
-		if(!$ru_contacts->date_responded) {
-			$ru_contacts->date_responded 		= 	date('Y-m-d H:i:s');
-			$ru_contacts->save();
+		$reports 	= 	Report::find(Input::get('report_id'));
+		if(!$reports->date_responded) {
+			$reports->date_responded 		= 	date('Y-m-d H:i:s');
+			$reports->save();
+			helper::sendGCMToPU($reports->pu_id);
 
 			$returnedValue = array(
 					'accepted' 	=> 	true
@@ -249,5 +247,49 @@ class MapsController extends \BaseController {
 		}
 
 		return $returnedValue;
+	}
+
+
+	/****
+	**	FOR REAL TIME MAP VIEW
+	**
+	****/
+	public function realTimeMap() {
+		return View::make('contents.realtimeMap');
+	}
+
+	public function getCurrentTime() {
+		return Response::json(date('Y-m-d H:i:s'));
+	}
+
+	public function getLiveReports($currentTime) {
+		$currentReport 	= 	DB::select(DB::raw("
+				SELECT 
+					r.id as r_id, 
+					r.pu_id, 
+						pu.name as pu_name, 
+						pu.birth_date, 
+						pu.gender, 
+						pu.email as pu_email, 
+						pu.contact_number as pu_contact_number, 
+					r.lat as r_lat, r.lng as r_lng, 
+					r.ru_id, 
+						ru.name as ru_name,
+						ru.lat as ru_lat,
+						ru.lng as ru_lng,
+					r.ec_id, 
+						ec.description, 
+						ec.color_hex,
+					r.date_reported, r.date_responded 
+				FROM 
+					reports r, person_units pu, rescue_units ru, emergency_codes as ec 
+				WHERE 
+					r.pu_id = pu.id AND
+					r.ru_id = ru.id AND
+					r.ec_id = ec.id AND
+					r.date_reported > '".$currentTime."'
+			"));
+
+		return Response::json($currentReport);
 	}
 }
