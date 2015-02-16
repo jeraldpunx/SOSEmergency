@@ -386,10 +386,12 @@ footer {
 
 }
 
-.logs textarea {
+.logs textarea:disabled {
     resize: none;
     height: 200px;
     border: 2px solid #c0392b;
+    opacity: 1;
+    color: black;
 }
 
 .titleArea {
