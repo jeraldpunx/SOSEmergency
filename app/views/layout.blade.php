@@ -36,9 +36,9 @@
 	            <a href="{{ URL::route('home') }}"><img src="assets/img/logo.png" style="height: 100%;"></a>
 	        </h1>
 	        <nav>
-	            <a href="">Lorem</a>
+	           <!--  <a href="">Lorem</a>
 	            <a href="">Ipsum</a>
-	            <a href="">Dolor</a>
+	            <a href="">Dolor</a> -->
 	        </nav>
 	    </div>
 	</header><!-- /header -->
@@ -60,6 +60,7 @@
 	<script src="{{ URL::asset('assets/js/pace.min.js') }}"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.js"></script>
 	<script src="{{ URL::asset('assets/js/application.js') }}"></script>
+
 
 	@yield('script')
 </body>
