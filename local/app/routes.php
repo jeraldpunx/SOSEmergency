@@ -36,7 +36,7 @@ Route::get('viewreport', 					'AdminController@viewReport');
 
 Route::post('register', 					'RestController@storePU');
 Route::post('request', 						'RestController@storeRU');
-Route::post('checkrespondentstatus', 		'RestController@checkRespondentStatus');
+Route::post('checkrespondentcontact', 		'RestController@checkRespondentContact');
 Route::post('insertnewcontact', 			'RestController@insertNewContact');
 Route::get('emergencyCodes', 				'RestController@retrieveEmergencyCodes');
 Route::post('shortest', 					'RestController@shortest');

@@ -111,23 +111,48 @@ class RestController extends \BaseController {
 		return Response::json($returnedValue);
 	}
 
-	public function checkRespondentStatus()
+	public function checkRespondentContact()
 	{
-		$rescue_unit = RescueUnit::find(Input::get('ru_id'));
-		return $rescue_unit;
+		$ru_contact = RUContact::select("*")
+							->where('ru_id', '=', Input::get('ru_id'))
+							->get();
+		if($ru_contact->isEmpty()) {
+			$returnedValue = array(
+				'registered'		=>	false
+			);
+		} else {
+			$returnedValue = array(
+				'registered'		=>	true
+			);
+		}
+		return Response::json($returnedValue);
 	}
 
 	public function insertNewContact()
 	{
-		$contact 					= 	new RUContact;
-		$contact->ru_id 			= 	Input::get('ru_id');
-		$contact->contact_number 	= 	Input::get('contact_number');
-		$contact->deviceID 			= 	Input::get('deviceID');
-		$contact->save();
+		$ru_contact = RUContact::select("*")
+							->where('ru_id', '=', Input::get('ru_id'))
+							->where('contact_number', '=', Input::get('contact_number'))
+							->get();
+		if($ru_contact->isEmpty()) {
+			$contact 					= 	new RUContact;
+			$contact->ru_id 			= 	Input::get('ru_id');
+			$contact->contact_number 	= 	Input::get('contact_number');
+			$contact->deviceID 			= 	Input::get('deviceID');
+			$contact->save();
+		} else {
+			$contact 					= 	RUContact::find($ru_contact[0]->id);
+			$contact->ru_id 			= 	Input::get('ru_id');
+			$contact->contact_number 	= 	Input::get('contact_number');
+			$contact->deviceID 			= 	Input::get('deviceID');
+			$contact->save();
+		}
 
 		$returnedValue = array(
 			'error'		=>	false
 		);
+
+		return Response::json($returnedValue);
 	}
 
 	public function uploads()
