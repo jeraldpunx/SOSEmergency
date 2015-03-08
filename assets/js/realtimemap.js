@@ -30,7 +30,8 @@ $( window ).load(function() {
 		};
 		var directionsRenderer = new google.maps.DirectionsRenderer(rendererOptions);
 		directionsRenderer.setDirections(result);
-		var iconUrl 	= 	"https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=|"+infoDetails.color_hex;
+		var colorHex 	= 	infoDetails.color_hex.slice( 1 );
+		var iconUrl 	= 	"https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=|"+colorHex;
 		var routeLegs 	= 	result.routes[0].legs[0];
 
 		var marker = new google.maps.Marker({
@@ -94,10 +95,8 @@ $( window ).load(function() {
 	});
 
 	function getReportQueue() {
-		xhr_get("reportqueue").done( function(data){
-			console.log(data);
-		});
-		window.setTimeout( getReportQueue, 5000);
+		xhr_get("reportqueue").done();
+		window.setTimeout( getReportQueue, 1000);
 	}
 
 	xhr_get("getcurrenttime").done( function(date){

@@ -40,7 +40,6 @@ Route::post('checkrespondentstatus', 		'RestController@checkRespondentStatus');
 Route::post('insertnewcontact', 			'RestController@insertNewContact');
 Route::get('emergencyCodes', 				'RestController@retrieveEmergencyCodes');
 Route::post('shortest', 					'RestController@shortest');
-Route::post('shortestmobile', 				'RestController@shortestMobile');
 Route::post('responseEmergency', 			'RestController@responseEmergency');
 Route::post('upload', 						'RestController@uploads');
 

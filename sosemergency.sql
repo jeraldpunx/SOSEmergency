@@ -56,8 +56,6 @@ INSERT INTO `emergency_codes` (`id`, `color_name`, `description`, `icon`, `color
 CREATE TABLE IF NOT EXISTS `person_units` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `home_lat` float(10,6) DEFAULT NULL,
-  `home_lng` float(10,6) DEFAULT NULL,
   `birth_date` date DEFAULT NULL,
   `gender` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
   `email` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,

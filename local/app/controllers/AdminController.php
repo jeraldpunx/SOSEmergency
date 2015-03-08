@@ -51,6 +51,7 @@ class AdminController extends \BaseController {
 		DB::setFetchMode(PDO::FETCH_CLASS);
 
 		return Response::JSON($markers);
+
 	}
 
 	/****************************************

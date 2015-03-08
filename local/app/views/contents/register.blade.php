@@ -29,15 +29,6 @@
 			<input id="name" type="text" name="name" autofocus="" required="" placeholder="Full Name" class="form-control">
 		</div>
 
-		<div class="form-group">
-			<label for="home_lat">home_lat: </label>
-			<input id="home_lat" type="text" name="home_lat" autofocus="" required="" placeholder="home_lat" class="form-control">
-		</div>
-
-		<div class="form-group">
-			<label for="home_lng">home_lng: </label>
-			<input id="home_lng" type="text" name="home_lng" autofocus="" required="" placeholder="home_lng" class="form-control">
-		</div>
 
 		<div class="form-group">
 			<label for="birth_date">Birth Date: </label>

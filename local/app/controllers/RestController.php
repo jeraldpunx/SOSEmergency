@@ -226,7 +226,9 @@ class RestController extends \BaseController {
 		$markersByRadius = DB::select(
 			DB::raw(
 				"SELECT rescue_units.id as 'rescue_units_id', name, address, lat, lng, email, type, status, 
-					( 6371 * acos( cos( radians(:latOne) ) * cos( radians( lat ) ) * cos( radians( lng ) - radians(:lng) ) + sin( radians(:latTwo) ) * sin( radians( lat ) ) ) ) AS distance 
+					( 
+						6371 * acos( cos( radians(:latOne) ) * cos( radians( lat ) ) * cos( radians( lng ) - radians(:lng) ) + sin( radians(:latTwo) ) * sin( radians( lat ) ) ) 
+					) AS distance 
 				FROM rescue_units WHERE rescue_units.id IN (
 										SELECT ru_id FROM ru_ec WHERE ec_id = (
 												SELECT id FROM emergency_codes WHERE ID = :ec_id
@@ -260,64 +262,6 @@ class RestController extends \BaseController {
 		helper::insertToQueue($pu_id, $respondentArray, $ec_id, $latOrigin, $lngOrigin, 0);
 		//SENDNOW
 		//helper::checkRespond($pu_id, $respondentArray, $ec_id, $latOrigin, $lngOrigin);
-	}
-
-	public function shortestMobile()
-	{
-		$message_type = Input::get("message_type");
-
-		if (strtoupper($message_type) == "INCOMING") {
-			$message = explode(",", Input::get("message"));
-
-	        $message = explode(",",$message);
-	        $message = $message[3];
-	        $pu_id 			= 	$message[0];
-			$ec_id 			= 	$message[1];
-			$latOrigin 		= 	$message[2];
-			$lngOrigin 		= 	$message[3];
-
-			$limit 			= 	3;
-			$origin 		= 	$latOrigin . "," . $lngOrigin;
-
-			//QUERY GET DISTANCE BY CIRCLE
-			$markersByRadius = DB::select(
-				DB::raw(
-					"SELECT rescue_units.id as 'rescue_units_id', name, address, lat, lng, email, type, status, 
-						( 6371 * acos( cos( radians(:latOne) ) * cos( radians( lat ) ) * cos( radians( lng ) - radians(:lng) ) + sin( radians(:latTwo) ) * sin( radians( lat ) ) ) ) AS distance 
-					FROM rescue_units WHERE rescue_units.id IN (
-											SELECT ru_id FROM ru_ec WHERE ec_id = (
-													SELECT id FROM emergency_codes WHERE ID = :ec_id
-											)
-										) AND status = 1 order by distance LIMIT 3"
-				), array(
-					'latOne' 	=> 	$latOrigin,
-					'lng' 		=> 	$lngOrigin,
-					'latTwo' 	=> 	$latOrigin,
-					'ec_id' 	=> 	$ec_id
-			));
-
-			//GET KM BY USING ROAD
-			foreach ($markersByRadius as $key => $value) {
-				$destLatLng 	= 	$value->lat . "," . $value->lng;
-				$distanceByKM			=	helper::calculateKM($origin,$destLatLng);
-				$value->distanceByKM = $distanceByKM;
-			}
-			//SORT LOW TO HIGH BY KM
-			usort($markersByRadius, function($a, $b) { 
-				return $a->distanceByKM < $b->distanceByKM ? -1 : 1; 
-			});
-
-			$respondentArray 	= 	array();
-			foreach ($markersByRadius as $markers => $value) {
-				$respondentID 	= 	$markersByRadius[$markers]->rescue_units_id;
-				array_push($respondentArray, $respondentID);
-			}
-			
-			//Add TO QUEUE
-			helper::insertToQueue($pu_id, $respondentArray, $ec_id, $latOrigin, $lngOrigin, 1);
-			//SENDNOW
-			//helper::checkRespond($pu_id, $respondentArray, $ec_id, $latOrigin, $lngOrigin);
-		}
 	}
 
 	public function responseEmergency() 
