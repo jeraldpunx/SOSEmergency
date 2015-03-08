@@ -31,6 +31,7 @@
 </head>
 <body>
 	<header>
+<<<<<<< HEAD:local/app/views/layout.blade.php
 		<div class="container clearfix">
 			<h1 id="logo">
 				<a href="{{ URL::route('home') }}"><img src="{{ URL::asset('assets/img/logo.png') }}" style="height: 100%;"></a>
@@ -41,6 +42,18 @@
 				<a href="">View Request</a>
 			</nav>
 		</div>
+=======
+	    <div class="container clearfix">
+	        <h1 id="logo">
+	            <a href="{{ URL::route('home') }}"><img src="assets/img/logo.png" style="height: 100%;"></a>
+	        </h1>
+	        <nav>
+	           <!--  <a href="">Lorem</a>
+	            <a href="">Ipsum</a>
+	            <a href="">Dolor</a> -->
+	        </nav>
+	    </div>
+>>>>>>> origin/master:app/views/layout.blade.php
 	</header><!-- /header -->
 
 	<div id="wrapper">
