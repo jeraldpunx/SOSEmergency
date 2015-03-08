@@ -98,6 +98,30 @@ class RestController extends \BaseController {
 			$user->password 				=	Hash::make(Input::get('password'));
 			$user->save();
 
+			switch (Input::get('resType')) {
+				case 'firecontrol':
+					$ec_id 	= array(1, 3);
+					break;
+				case 'hospital':
+					$ec_id 	= array(2, 5);
+					break;
+				case 'police':
+					$ec_id 	= array(4, 6);
+					break;
+				case 'rescuevolunteer':
+					$ec_id 	= array(1, 2);
+					break;
+			}
+
+			if(is_array($ec_id)) {
+				foreach ($ec_id as $ec) {
+					$ru_ec 					= 	new RuEc();
+					$ru_ec->ru_id 			= 	$rescue_units->id;
+					$ru_ec->ec_id 			= 	$ec;
+					$ru_ec->save();
+				}
+			}
+
 			$returnedValue = array(
 				'id' 	=>	$rescue_unit->id,
 				'error'	=>	false
@@ -115,6 +139,7 @@ class RestController extends \BaseController {
 	{
 		$ru_contact = RUContact::select("*")
 							->where('ru_id', '=', Input::get('ru_id'))
+							->where('deviceID', '=', Input::get('deviceID'))
 							->get();
 		if($ru_contact->isEmpty()) {
 			$returnedValue = array(
@@ -134,23 +159,38 @@ class RestController extends \BaseController {
 							->where('ru_id', '=', Input::get('ru_id'))
 							->where('contact_number', '=', Input::get('contact_number'))
 							->get();
-		if($ru_contact->isEmpty()) {
-			$contact 					= 	new RUContact;
-			$contact->ru_id 			= 	Input::get('ru_id');
-			$contact->contact_number 	= 	Input::get('contact_number');
-			$contact->deviceID 			= 	Input::get('deviceID');
-			$contact->save();
-		} else {
-			$contact 					= 	RUContact::find($ru_contact[0]->id);
-			$contact->ru_id 			= 	Input::get('ru_id');
-			$contact->contact_number 	= 	Input::get('contact_number');
-			$contact->deviceID 			= 	Input::get('deviceID');
-			$contact->save();
-		}
 
-		$returnedValue = array(
-			'error'		=>	false
+		$input = Input::all();
+
+		$rules = array(
+			'contact_number' 		=> 	'required'
 		);
+		$validation = Validator::make($input, $rules);
+
+		if($validation->passes()) {
+			if($ru_contact->isEmpty()) {
+				$contact 					= 	new RUContact;
+				$contact->ru_id 			= 	Input::get('ru_id');
+				$contact->contact_number 	= 	Input::get('contact_number');
+				$contact->deviceID 			= 	Input::get('deviceID');
+				$contact->save();
+			} else {
+				$contact 					= 	RUContact::find($ru_contact[0]->id);
+				$contact->ru_id 			= 	Input::get('ru_id');
+				$contact->contact_number 	= 	Input::get('contact_number');
+				$contact->deviceID 			= 	Input::get('deviceID');
+				$contact->save();
+			}
+
+			$returnedValue = array(
+				'error'		=>	false
+			);
+		} else {
+			$returnedValue = array(
+				'error'		=>	true,
+				'messages'	=>	$validation->messages()
+			);
+		}
 
 		return Response::json($returnedValue);
 	}
@@ -258,12 +298,13 @@ class RestController extends \BaseController {
 										SELECT ru_id FROM ru_ec WHERE ec_id = (
 												SELECT id FROM emergency_codes WHERE ID = :ec_id
 										)
-									) AND status = 1 order by distance LIMIT 3"
+									) AND status = 1 order by distance LIMIT :limit"
 			), array(
 				'latOne' 	=> 	$latOrigin,
 				'lng' 		=> 	$lngOrigin,
 				'latTwo' 	=> 	$latOrigin,
-				'ec_id' 	=> 	$ec_id
+				'ec_id' 	=> 	$ec_id,
+				'limit' 	=> 	$limit
 		));
 
 		//GET KM BY USING ROAD
@@ -291,7 +332,6 @@ class RestController extends \BaseController {
 
 	public function responseEmergency() 
 	{
-
 		$reports 	= 	Report::find(Input::get('report_id'));
 		if(!$reports->date_responded) {
 			$reports->date_responded 		= 	date('Y-m-d H:i:s');

@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `emergency_codes` (
 INSERT INTO `emergency_codes` (`id`, `color_name`, `description`, `icon`, `color_hex`) VALUES
 (1, 'Red', 'Fire', 'fire.png', '#CF000F'),
 (2, 'Blue', 'Medical Need', 'mass.png', '#22A7F0'),
-(3, 'Orange', 'Mass Casualties', 'masscasualties.png', '#e67e22'),
+(3, 'Orange', 'Mass Casualties', 'massca.png', '#e67e22'),
 (4, 'Yellow', 'Missing Patient and Abducted Person', 'mass.png', '#F7CA18'),
 (5, 'Brown', 'Hazardous Spill', 'hazardous.png', '#7a5230'),
 (6, 'Black', 'Crime Incident', 'crime.png', '#3B3433');

@@ -93,7 +93,7 @@ class helper {
 	// }
 
 	public static function sendGCMToRU($ru_id, $pu_id, $ec_id, $latOrigin, $lngOrigin, $reportID) {
-		$devices 		= 	RUContact::select('deviceID')
+		$ru_contact 		= 	RUContact::select('*')
 								->where('ru_id', '=', $ru_id)
 								->get();
 
@@ -105,10 +105,16 @@ class helper {
 								->where('id', '=', $ec_id)
 								->get()[0];
 		//Sent to these devices
-		$registrationIDs = array();
-		foreach ($devices as $key => $value) {
-			$regID = $devices[$key]->deviceID;
-			array_push($registrationIDs, $regID);
+		$registrationIDs 	= 	array();
+		$contacts 		 	=	array();
+		foreach ($ru_contact as $key => $value) {
+			if($ru_contact[$key]->deviceID) {
+				$regID = $ru_contact[$key]->deviceID;
+				array_push($registrationIDs, $regID);
+			} else {
+				$contact_number = $ru_contact[$key]->contact_number;
+				array_push($contacts, $contact_number);
+			}
 		}
 
 
