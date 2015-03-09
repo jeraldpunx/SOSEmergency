@@ -116,7 +116,7 @@ class RestController extends \BaseController {
 			if(is_array($ec_id)) {
 				foreach ($ec_id as $ec) {
 					$ru_ec 					= 	new RuEc();
-					$ru_ec->ru_id 			= 	$rescue_units->id;
+					$ru_ec->ru_id 			= 	$rescue_unit->id;
 					$ru_ec->ec_id 			= 	$ec;
 					$ru_ec->save();
 				}
