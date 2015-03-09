@@ -336,7 +336,7 @@ class RestController extends \BaseController {
 		if(!$reports->date_responded) {
 			$reports->date_responded 		= 	date('Y-m-d H:i:s');
 			$reports->save();
-			helper::sendGCMToPU($reports->pu_id);
+			helper::sendGCMToPU($reports->pu_id, $reports->mobile);
 
 			$returnedValue = array(
 					'accepted' 	=> 	true
