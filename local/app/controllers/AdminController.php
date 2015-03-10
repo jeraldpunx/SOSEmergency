@@ -402,8 +402,11 @@ class AdminController extends \BaseController {
 					$report->date_received 	= 	date('Y-m-d H:i:s');
 					$report->mobile 		= 	$report_queue->mobile;
 					$report->report_group 	= 	$report_queue->report_group;
+					if($report_queue->report_image != "") {
+						$report->report_image 	= 	$report_queue->report_image;
+					}
 					$report->save();
-					helper::sendGCMToRU($report->ru_id, $report->pu_id, $report->ec_id, $report->lat, $report->lng, $report->id);
+					helper::sendGCMToRU($report->ru_id, $report->pu_id, $report->ec_id, $report->lat, $report->lng, $report->id, $report_queue->report_image);
 				}
 				$delete_report_queue = ReportsQueue::find($report_queue->id);
 				$delete_report_queue->delete();

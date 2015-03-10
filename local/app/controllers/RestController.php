@@ -270,7 +270,7 @@ class RestController extends \BaseController {
 	public function shortest()
 	{
 		$message_type = Input::get("message_type");
-
+		$imageString = "";
 		if (strtoupper($message_type) == "INCOMING") {
 			$message = explode(",", Input::get("message"));
 
@@ -283,7 +283,6 @@ class RestController extends \BaseController {
 		} else {
 			$images = Input::get('images');
 			if($images) {
-				$imageString = "";
 				foreach ($images as $key => $image) {
 					$srcArr = explode('/', $image["src"]);
 					$outputFile = $srcArr[count($srcArr)-1];
@@ -347,11 +346,12 @@ class RestController extends \BaseController {
 			$respondentID 	= 	$markersByRadius[$markers]->rescue_units_id;
 			array_push($respondentArray, $respondentID);
 		}
-		
+
 		//Add TO QUEUE
-		helper::insertToQueue($pu_id, $respondentArray, $ec_id, $latOrigin, $lngOrigin, 0, $imageString);
-		//SENDNOW
-		//helper::checkRespond($pu_id, $respondentArray, $ec_id, $latOrigin, $lngOrigin);
+		if($imageString)
+			helper::insertToQueue($pu_id, $respondentArray, $ec_id, $latOrigin, $lngOrigin, 0, $imageString);
+		else
+			helper::insertToQueue($pu_id, $respondentArray, $ec_id, $latOrigin, $lngOrigin, 0, NULL);
 	}
 
 	public function responseEmergency() 

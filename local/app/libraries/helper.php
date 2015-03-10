@@ -54,6 +54,9 @@ class helper {
 				$reportqueue->date_received 	= 	date('Y-m-d H:i:s', time() + $currentAddSec);
 				$reportqueue->mobile 			= 	$mobile;
 				$reportqueue->report_group 		= 	$reportGroup;
+				if($report_image != "") {
+					$reportqueue->report_image 	= 	$report_image;
+				}
 				$reportqueue->save();
 
 				$currentAddSec 	= $currentAddSec + $secPerLoop;

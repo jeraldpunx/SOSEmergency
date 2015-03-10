@@ -17,7 +17,7 @@
 
 @section('content')
 	<div id="main">
-		<div class="container">
+		<div class="container" style="padding-top: 40px; padding-bottom: 40px;">
 			<div class="row">
 				<div class="titleArea">
 					<h2 class="">Report View</h2>
@@ -127,6 +127,25 @@
 					</address>
 				</div>
 			</div>
+			<br>
+			<hr>
+			@if($reports->report_image)
+			<div class="row">
+				<div class="container">
+					<h3>Images</h3><br>
+					<div class="report_image">
+						<?php
+							$report_image = explode(",",$reports->report_image);
+						?>
+
+						
+						<div class="col-md-3 col-sm-4 col-xs-6"><img class="img-responsive" src="{{ URL::asset('uploads/' . $report_image[0]) }}"></div>
+						<div class="col-md-3 col-sm-4 col-xs-6"><img class="img-responsive" src="{{ URL::asset('uploads/' . $report_image[1]) }}"></div>
+						<div class="col-md-3 col-sm-4 col-xs-6"><img class="img-responsive" src="{{ URL::asset('uploads/' . $report_image[2]) }}"></div>
+					</div>
+				</div>
+			</div>
+			@endif
 		</div>
 	</div>
 @stop
