@@ -64,14 +64,6 @@ class AdminController extends \BaseController {
 		return View::make('contents.mapView');
 	}
 
-	public function listView()
-	{
-		$markers = RescueUnit::select('rescue_units.id as rescue_units_id', 'name', 'address', 'lat', 'lng', 'email', 'rescue_units.type as rescue_type', 'status')
-								->where('status', '=', 1)
-								->orderBy('rescue_units.id')->get();
-		return View::make('contents.listView')->with('markers', $markers);
-	}
-
 	public function editRU($id)
 	{
 		return "aw";
@@ -109,16 +101,16 @@ class AdminController extends \BaseController {
 
 			switch (Input::get('type')) {
 				case 'firecontrol':
-					$ec_id 	= array(1, 3);
+					$ec_id 	= array(1);
 					break;
 				case 'hospital':
-					$ec_id 	= array(2, 5);
+					$ec_id 	= array(2, 3, 5, 6);
 					break;
 				case 'police':
 					$ec_id 	= array(4, 6);
 					break;
 				case 'rescuevolunteer':
-					$ec_id 	= array(1, 2);
+					$ec_id 	= array(1, 2, 3);
 					break;
 			}
 
@@ -187,6 +179,32 @@ class AdminController extends \BaseController {
 			$rescue_units->email 	= 	Input::get('email');
 			$rescue_units->type 	= 	Input::get('type');
 			$rescue_units->save();
+
+			DB::table('ru_ec')->where('ru_id', '=', $id)->delete();
+
+			switch (Input::get('type')) {
+				case 'firecontrol':
+					$ec_id 	= array(1);
+					break;
+				case 'hospital':
+					$ec_id 	= array(2, 3, 5, 6);
+					break;
+				case 'police':
+					$ec_id 	= array(4, 6);
+					break;
+				case 'rescuevolunteer':
+					$ec_id 	= array(1, 2, 3);
+					break;
+			}
+
+			if(is_array($ec_id)) {
+				foreach ($ec_id as $ec) {
+					$ru_ec 					= 	new RuEc();
+					$ru_ec->ru_id 			= 	$rescue_units->id;
+					$ru_ec->ec_id 			= 	$ec;
+					$ru_ec->save();
+				}
+			}
 
 			$userID 			= 	User::select('id')->where('puid_ruid', '=', $id)->get()[0]->id;
 			$user 				= 	User::find($userID);
@@ -289,9 +307,66 @@ class AdminController extends \BaseController {
 		$ru_contacts->delete();
 	}
 
-	public function viewReport()
+	public function listView()
 	{
-		return View::make('contents.viewReport');
+		$markers = RescueUnit::select('rescue_units.id as rescue_units_id', 'name', 'address', 'lat', 'lng', 'email', 'rescue_units.type as rescue_type', 'status')
+								->where('status', '=', 1)
+								->orderBy('rescue_units.id')->get();
+		return View::make('contents.listView')->with('markers', $markers);
+	}
+
+	public function deleteRU($id)
+	{
+		return Redirect::back();
+	}
+
+	public function listPU()
+	{
+		$reports = EmergencyCode::all();
+		return View::make('contents.listPU')->with('reports', $reports);
+	}
+
+	public function listReport()
+	{
+
+		$reports = Report::select("reports.id as report_id", "date_reported", "date_received", "date_responded","rescue_units.name as rescue_unit_name", "type", "person_units.name as person_unit_name", "description")
+						->join("rescue_units", "rescue_units.id", "=", "reports.ru_id")
+						->join("person_units", "person_units.id", "=", "reports.pu_id")
+						->join("emergency_codes", "emergency_codes.id", "=", "reports.ec_id")
+						->get();
+		return View::make('contents.listReport')->with('reports', $reports);
+	}
+
+	public function listRequest()
+	{
+		$markers = RescueUnit::select('rescue_units.id as rescue_units_id', 'name', 'address', 'lat', 'lng', 'email', 'rescue_units.type as rescue_type', 'status')
+								->where('status', '=', 0)
+								->orderBy('rescue_units.id')->get();
+		return View::make('contents.listRequest')->with('markers', $markers);
+	}
+
+	public function viewReport($id)
+	{
+		$reports = Report::select("reports.id as report_id", "pu_id", "ru_id", "ec_id", "reports.lat as report_lat", "reports.lng as report_lng", "date_reported", "date_received", "date_responded", "mobile", "report_group", "report_image", "rescue_units.name as rescue_unit_name", "address", "rescue_units.email as rescue_unit_email", "type", "person_units.name as person_unit_name", "birth_date", "gender", "person_units.email as person_unit_email", "contact_number", "color_name", "description", "color_hex")
+						->join("rescue_units", "rescue_units.id", "=", "reports.ru_id")
+						->join("person_units", "person_units.id", "=", "reports.pu_id")
+						->join("emergency_codes", "emergency_codes.id", "=", "reports.ec_id")
+						->where("reports.id", "=", $id)
+						->get();
+
+		return View::make('contents.viewReport')->with('reports', $reports);
+	}
+
+	public function listEmergencyCodes()
+	{
+		$emergencyCodes = EmergencyCode::all();
+		return  View::make('contents.listEmergencyCodes')->with('emergencyCodes', $emergencyCodes);
+	}
+
+	public function addEmergencyCodes()
+	{
+
+		return View::make('contents.addEmergencyCodes');
 	}
 
 

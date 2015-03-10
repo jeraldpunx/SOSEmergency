@@ -19,7 +19,7 @@
 
 @section('content')
 	<div id="main">
-		<div class="container">
+		<div class="container" style="padding-top: 40px; padding-bottom: 40px;">
 			<div class="row">
 				<div class="titleArea">
 					<h2 class="">List View</h2>
@@ -33,8 +33,9 @@
 			<div class="row">
 				<div class="pull-right">
 					<a class="btn btn-embossed btn-primary active" href="#">Rescue Unit</a>
-					<a class="btn btn-embossed btn-primary" href="{{ URL::route('mapview') }}">Person Unit</a>
-					<a class="btn btn-embossed btn-primary" href="{{ URL::route('mapview') }}">Report</a>
+					<a class="btn btn-embossed btn-primary" href="{{ URL::route('listpu') }}">Person Unit</a>
+					<a class="btn btn-embossed btn-primary" href="{{ URL::route('listemergencycodes') }}">Emergency Codes</a>
+					<a class="btn btn-embossed btn-primary" href="{{ URL::route('listreport') }}">Report</a>
 				</div>
 			</div>
 
@@ -77,7 +78,7 @@
 					        			<div class="input-group">
 					        				<a data-target="#contactsMarkerModal" data-toggle="modal" data-id="{{ $marker->rescue_units_id }}" href="#" class="contacts btn btn-embossed btn-primary btn-xs">Contacts</a>
 						        			<a class="btn btn-embossed btn-xs btn-info" href="{{ URL::route('editru', $marker->rescue_units_id ) }}">Edit</a>
-											<a class="btn btn-embossed btn-xs btn-danger" href="mapView">Delete</a>
+											<a class="btn btn-embossed btn-xs btn-danger" href="{{ URL::route('deleteRU', $marker->rescue_units_id ) }}">Delete</a>
 										</div>
 									</div>
 				        		</td>

@@ -2,19 +2,17 @@
 
 @section('style')
 	<style type="text/css">
-		
-		table {
-		  table-layout: fixed;
-		  width: 100%;
-		}
-
-		table .fix {
-		  width: 19%;
-		  white-space: nowrap;
-		  overflow: hidden;         /* <- this does seem to be required */
-		  text-overflow: ellipsis;
+		.main-box {
+			background: red;
+			box-shadow: 0px 1px 1px rgba(0,0,0,0.1);
+			margin-bottom: 16px;
+			border-radius: 3px;
+			background-clip: padding-box;
+			padding: 20px;
 		}
 	</style>
+@stop
+
 @stop
 
 @section('content')
@@ -22,102 +20,121 @@
 		<div class="container">
 			<div class="row">
 				<div class="titleArea">
-					<h2 class="">List View</h2>
-					<a class="pull-right btn btn-embossed btn-danger active" href="#">List View</a>
-					<a class="pull-right btn btn-embossed btn-danger" href="{{ URL::route('mapview') }}">Map View</a>
+					<h2 class="">Report View</h2>
 				</div>
 			</div>
-			
+
 			<hr>
 			
 			<div class="row">
-				<div class="pull-right">
-					<a class="btn btn-embossed btn-primary" href="#">Rescue Unit</a>
-					<a class="btn btn-embossed btn-primary" href="#">Person Unit</a>
-					<a class="btn btn-embossed btn-primary active" href="#">Report</a>
+				<div class="pull-left">
+					<a class="btn btn-embossed btn-danger" href="{{ URL::route('listreport') }}"><span class="glyphicon glyphicon-arrow-left"></span> Back</a>
 				</div>
 			</div>
 
 			<hr>
 
-			<div class="top-buffer row listview">
-				<a class="pull-right btn btn-embossed btn-success" href="{{ URL::route('mapview') }}">Add marker</a>
-				<p><strong>Respondents List</strong></p>
-				@if ($markers->count())
-				    <table class="table table-condensed">
-				        <thead>
-				            <tr>
-				                <th class="fix">Name</th>
-						        <th class="fix">Address</th>
-						        <th class="fix">Email</th>
-						        <th class="fix">Rescue Type</th>
-						        <th></th>
-				            </tr>
-				        </thead>
+			<?php $reports = $reports[0]; ?>
+			<div class="row">
+				<div class="col-md-4">
+					<h4>Report Details</h4>
+					<address>
+						<strong>Color <span style="color:{{ $reports->color_hex }};">{{ $reports->color_name }}</span>: </strong>
+						<a>{{ $reports->description }}</a>
+					</address>
 
-				        <tbody>
-				        	@foreach ($markers as $marker)
-				        	<tr>
-				        		<td class="fix">{{ $marker->name }}</td>
-				        		<td class="fix">{{ $marker->address }}</td>
-				        		<td class="fix">{{ $marker->email }}</td>
-				        		<td class="fix">
-				        			@if($marker->rescue_type == 'hospital')
-				        				{{ "Hospital" }}
-				        			@elseif($marker->rescue_type == 'firecontrol')
-				        				{{ "Fire Control" }}
-				        			@elseif($marker->rescue_type == 'police')
-				        				{{ "Police Station" }}
-				        			@elseif($marker->rescue_type == 'rescuevolunteer')
-				        				{{ "Rescue Volunteer" }}
-				        			@endif
-				        		</td>
-				        		<td>
-				        			<div class="col-md-12">
-					        			<div class="input-group">
-					        				<a data-target="#contactsMarkerModal" data-toggle="modal" data-id="{{ $marker->rescue_units_id }}" href="#" class="contacts btn btn-embossed btn-primary btn-xs">Contacts</a>
-						        			<a class="btn btn-embossed btn-xs btn-info" href="{{ URL::route('editru', $marker->rescue_units_id ) }}">Edit</a>
-											<a class="btn btn-embossed btn-xs btn-danger" href="mapView">Delete</a>
-										</div>
-									</div>
-				        		</td>
-		
-				            </tr>
-				            @endforeach
-				              
-				        </tbody>
-				      
-				    </table>
-				@else
-				    There are no markers
-				@endif
-			</div>
-		</div>
+					<address>
+						<strong>Date Reported</strong><br>
+						<a>{{ $reports->date_reported }}</a>
+					</address>
 
-		<!-- contactsModal -->
-		<div class="modal fade" id="contactsMarkerModal" tabindex="-1" role="dialog" aria-labelledby="contactsMarkerModalLabel" aria-hidden="true">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title" id="contactsMarkerModalLabel">Contact Number</h4>
-					</div>
-					<div class="modal-body" id="modalBodyContact">
-						<table id="contactsTable" class="display" cellspacing="0" width="100%">
-						</table>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-embossed btn-success" id="addNewContact" data-ruid="123">Add new</button>
-						<button type="button" class="btn btn-embossed btn-danger" data-dismiss="modal">Close</button>
-					</div>
+					<address>
+						<strong>Date Reported</strong><br>
+						<a>{{ $reports->date_reported }}</a>
+					</address>
+
+					<address>
+						<strong>Date Received</strong><br>
+						<a>{{ $reports->date_received }}</a>
+					</address>
+
+					<address>
+						<strong>Date Responded</strong><br>
+						<p>
+						@if($reports->date_responded)
+							{{ $reports->date_responded }}
+						@else
+							{{ "None" }}
+						@endif
+						</p>
+					</address>
+				</div>
+
+				<div class="col-md-4">
+					<h4>Person</h4>
+					<address>
+						<strong>Name</strong><br>
+						<a>{{ $reports->person_unit_name }}</a>
+					</address>
+
+					<address>
+						<strong>Birth Date</strong><br>
+						<a>{{ $reports->birth_date }}</a>
+					</address>
+
+					<address>
+						<strong>Gender</strong><br>
+						<a>{{ $reports->gender }}</a>
+					</address>
+
+					<address>
+						<strong>Email</strong><br>
+						<a>{{ $reports->person_unit_email }}</a>
+					</address>
+
+					<address>
+						<strong>Contact Number</strong><br>
+						<a>{{ $reports->contact_number }}</a>
+					</address>
+				</div>
+
+				<div class="col-md-4">
+					<h4>Rescuer</h4>
+					<address>
+						<strong>Name</strong><br>
+						<a>{{ $reports->rescue_unit_name }}</a>
+					</address>
+
+					<address>
+						<strong>Addres</strong><br>
+						<a>{{ $reports->address }}</a>
+					</address>
+
+					<address>
+						<strong>Email</strong><br>
+						<a>
+						@if($reports->rescue_unit_email)
+							{{ $reports->rescue_unit_email }}
+						@else
+							None
+						@endif
+						</a>
+					</address>
+
+					<address>
+						<strong>Type</strong><br>
+						<a>{{ $reports->type }}</a>
+					</address>
 				</div>
 			</div>
 		</div>
 	</div>
 @stop
 
+
 @section('script')
-	<script src="{{ URL::asset('assets/js/listview.js') }}"></script>
 	<script src="{{ URL::asset('assets/js/classie.js') }}"></script>
 @stop
+
+
 

@@ -200,10 +200,13 @@ class RestController extends \BaseController {
 		$images = Input::get('images');
 
 		foreach ($images as $key => $image) {
+			$srcArr = explode('/', $image["src"]);
+			$outputFile = $srcArr[count($srcArr)-1];
+
 			$file = explode(',', $image["binary"]); 
 			$base64_string = $file[1]; 
 
-			$saveto = public_path()."/uploads/".$image["src"]; 
+			$saveto = public_path()."/uploads/".$outputFile; 
 			$ifp = fopen( $saveto, "wb" ); 
 			fwrite( $ifp, base64_decode($base64_string) ); 
 			fclose( $ifp );
@@ -278,6 +281,27 @@ class RestController extends \BaseController {
 			$latOrigin 		= 	$message[2];
 			$lngOrigin 		= 	$message[3];
 		} else {
+			$images = Input::get('images');
+			if($images) {
+				$imageString = "";
+				foreach ($images as $key => $image) {
+					$srcArr = explode('/', $image["src"]);
+					$outputFile = $srcArr[count($srcArr)-1];
+
+					$file = explode(',', $image["binary"]); 
+					$base64_string = $file[1]; 
+
+					$saveto = public_path()."/uploads/".$outputFile; 
+					$ifp = fopen( $saveto, "wb" ); 
+					fwrite( $ifp, base64_decode($base64_string) ); 
+					fclose( $ifp );
+					if($key == 0) {
+						$imageString .= $outputFile;
+					} else {
+						$imageString .= ("," . $outputFile);
+					}
+				}
+			}
 			$pu_id 			= 	Input::get('pu_id');
 			$ec_id 			= 	Input::get('ec_id');
 			$latOrigin 		= 	Input::get('latOrigin');
@@ -325,7 +349,7 @@ class RestController extends \BaseController {
 		}
 		
 		//Add TO QUEUE
-		helper::insertToQueue($pu_id, $respondentArray, $ec_id, $latOrigin, $lngOrigin, 0);
+		helper::insertToQueue($pu_id, $respondentArray, $ec_id, $latOrigin, $lngOrigin, 0, $imageString);
 		//SENDNOW
 		//helper::checkRespond($pu_id, $respondentArray, $ec_id, $latOrigin, $lngOrigin);
 	}

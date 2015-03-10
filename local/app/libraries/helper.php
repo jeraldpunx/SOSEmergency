@@ -16,7 +16,7 @@ class helper {
 		}
 	}
 
-	public static function insertToQueue($pu_id, $respondentArray, $ec_id, $latOrigin, $lngOrigin, $mobile) {
+	public static function insertToQueue($pu_id, $respondentArray, $ec_id, $latOrigin, $lngOrigin, $mobile, $report_image) {
 		$reportGroup = helper::generateRandomString(8);
 		while(helper::isUsed($reportGroup)) {
 			$reportGroup = helper::generateRandomString(8);
@@ -32,9 +32,12 @@ class helper {
 		$report->date_received 	= 	date('Y-m-d H:i:s');
 		$report->mobile 		= 	$mobile;
 		$report->report_group 	= 	$reportGroup;
+		if($report_image != "") {
+			$report->report_image 	= 	$report_image;
+		}
 		$report->save();
 
-		helper::sendGCMToRU($respondentArray[0], $pu_id, $ec_id, $latOrigin, $lngOrigin, $report->id);
+		helper::sendGCMToRU($respondentArray[0], $pu_id, $ec_id, $latOrigin, $lngOrigin, $report->id, $report_image);
 
 		$secPerLoop 	= 	30;
 		$currentAddSec 	= 	$secPerLoop;
@@ -92,7 +95,7 @@ class helper {
 	// 	}
 	// }
 
-	public static function sendGCMToRU($ru_id, $pu_id, $ec_id, $latOrigin, $lngOrigin, $reportID) {
+	public static function sendGCMToRU($ru_id, $pu_id, $ec_id, $latOrigin, $lngOrigin, $reportID, $report_image) {
 		$ru_contact 		= 	RUContact::select('*')
 								->where('ru_id', '=', $ru_id)
 								->get();
@@ -126,7 +129,8 @@ class helper {
 											 "emergency" 		=> 	$emergency,
 											 "latOrigin" 		=> 	$latOrigin,
 											 "lngOrigin" 		=> 	$lngOrigin,
-											 "reportID" 		=> 	$reportID
+											 "reportID" 		=> 	$reportID, 
+											 "report_image" 	=> 	$report_image
 										)
 					);
 

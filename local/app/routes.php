@@ -32,7 +32,17 @@ Route::get('getMarkerContactInfo/{id}', 	'AdminController@getMarkerContactInfo')
 Route::post('addContact', 					'AdminController@addContact');
 Route::post('editContact/{id}', 			'AdminController@saveEditContact');
 Route::post('deleteContact', 				'AdminController@deleteContact');
-Route::get('viewreport', 					'AdminController@viewReport');
+
+
+Route::get('listrequest', 					['as'=>'listrequest',			'uses'=>'AdminController@listRequest']);
+Route::get('listpu', 						['as'=>'listpu',				'uses'=>'AdminController@listPU']);
+Route::get('listemergencycodes', 			['as'=>'listemergencycodes',	'uses'=>'AdminController@listEmergencyCodes']);
+Route::get('listreport', 					['as'=>'listreport',			'uses'=>'AdminController@listReport']);
+Route::get('addEmergencyCodes', 			'AdminController@addEmergencyCodes');
+
+Route::get('viewreport/{id}', 				['as'=>'viewreport',			'uses'=>'AdminController@viewReport']);
+
+Route::post('deleteRU/{id}', 				['as'=>'deleteRU',				'uses'=>'AdminController@deleteRU']);
 
 Route::post('register', 					'RestController@storePU');
 Route::post('request', 						'RestController@storeRU');
