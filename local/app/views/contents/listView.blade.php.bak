@@ -76,18 +76,16 @@
 				        		<td>
 				        			<div class="col-md-12">
 					        			<div class="input-group">
-					        				<a style="float: left;" data-target="#contactsMarkerModal" data-toggle="modal" data-id="{{ $marker->rescue_units_id }}" href="#" class="contacts btn btn-embossed btn-primary btn-xs">Contacts</a>
-						        			<a style="float: left;" class="btn btn-embossed btn-xs btn-info" href="{{ URL::route('editru', $marker->rescue_units_id ) }}">Edit</a>
-											<form style="float: left" action="{{ URL::route('declinerequest') }}" method="POST">
-					        					<input type="hidden" name="ru_id" value="{{ $marker->rescue_units_id }}">
-					        					<button type="submit" class="btn btn-embossed btn-xs btn-danger">Delete</button>
-					        				</form>
+					        				<a data-target="#contactsMarkerModal" data-toggle="modal" data-id="{{ $marker->rescue_units_id }}" href="#" class="contacts btn btn-embossed btn-primary btn-xs">Contacts</a>
+						        			<a class="btn btn-embossed btn-xs btn-info" href="{{ URL::route('editru', $marker->rescue_units_id ) }}">Edit</a>
+											<a class="btn btn-embossed btn-xs btn-danger" href="{{ URL::route('deleteRU', $marker->rescue_units_id ) }}">Delete</a>
 										</div>
 									</div>
 				        		</td>
 		
-							</tr>
-							@endforeach
+				            </tr>
+				            @endforeach
+				              
 				        </tbody>
 				      
 				    </table>

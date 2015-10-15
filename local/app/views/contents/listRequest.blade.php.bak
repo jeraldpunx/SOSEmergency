@@ -22,27 +22,13 @@
 		<div class="container" style="padding-top: 40px; padding-bottom: 40px;">
 			<div class="row">
 				<div class="titleArea">
-					<h2 class="">List View</h2>
-					<a class="pull-right btn btn-embossed btn-danger active" href="#">List View</a>
-					<a class="pull-right btn btn-embossed btn-danger" href="{{ URL::route('mapview') }}">Map View</a>
+					<h2 class="">List Requested Respondents</h2>
 				</div>
 			</div>
 			
-			<hr>
-			
-			<div class="row">
-				<div class="pull-right">
-					<a class="btn btn-embossed btn-primary active" href="#">Rescue Unit</a>
-					<a class="btn btn-embossed btn-primary" href="{{ URL::route('listpu') }}">Person Unit</a>
-					<a class="btn btn-embossed btn-primary" href="{{ URL::route('listemergencycodes') }}">Emergency Codes</a>
-					<a class="btn btn-embossed btn-primary" href="{{ URL::route('listreport') }}">Report</a>
-				</div>
-			</div>
-
 			<hr>
 
 			<div class="top-buffer row listview">
-				<a class="pull-right btn btn-embossed btn-success" href="{{ URL::route('mapview') }}">Add marker</a>
 				<p><strong>Respondents List</strong></p>
 				@if ($markers->count())
 				    <table class="table table-condensed">
@@ -59,7 +45,7 @@
 				        <tbody>
 				        	@foreach ($markers as $marker)
 				        	<tr>
-				        		<td class="fix"><b><a href="{{ URL::route('viewru', $marker->rescue_units_id ) }}">{{ $marker->name }}</a></b></td>
+				        		<td class="fix">{{ $marker->name }}</td>
 				        		<td class="fix">{{ $marker->address }}</td>
 				        		<td class="fix">{{ $marker->email }}</td>
 				        		<td class="fix">
@@ -76,18 +62,16 @@
 				        		<td>
 				        			<div class="col-md-12">
 					        			<div class="input-group">
-					        				<a style="float: left;" data-target="#contactsMarkerModal" data-toggle="modal" data-id="{{ $marker->rescue_units_id }}" href="#" class="contacts btn btn-embossed btn-primary btn-xs">Contacts</a>
-						        			<a style="float: left;" class="btn btn-embossed btn-xs btn-info" href="{{ URL::route('editru', $marker->rescue_units_id ) }}">Edit</a>
-											<form style="float: left" action="{{ URL::route('declinerequest') }}" method="POST">
-					        					<input type="hidden" name="ru_id" value="{{ $marker->rescue_units_id }}">
-					        					<button type="submit" class="btn btn-embossed btn-xs btn-danger">Delete</button>
-					        				</form>
+					        				<a data-target="#contactsMarkerModal" data-toggle="modal" data-id="{{ $marker->rescue_units_id }}" href="#" class="contacts btn btn-embossed btn-primary btn-xs">Contacts</a>
+						        			<a class="btn btn-embossed btn-xs btn-info" href="{{ URL::route('editru', $marker->rescue_units_id ) }}">Edit</a>
+											<a class="btn btn-embossed btn-xs btn-danger" href="mapView">Delete</a>
 										</div>
 									</div>
 				        		</td>
 		
-							</tr>
-							@endforeach
+				            </tr>
+				            @endforeach
+				              
 				        </tbody>
 				      
 				    </table>

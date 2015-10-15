@@ -3,7 +3,7 @@
 class helper {
 	public static function calculateKM($origin, $destination) {
 		//request the directions
-		$link 		= 	"http://maps.googleapis.com/maps/api/directions/json?origin={$origin}&destination={$destination}&alternatives=true&sensor=false";
+		$link 		= 	"http://maps.googleapis.com/maps/api/directions/json?origin=$origin&destination=$destination&alternatives=true&sensor=false";
 		$result 	=	json_decode(file_get_contents($link));
 		if($result->status == "OK") {
 			$routes 	= 	$result->routes;

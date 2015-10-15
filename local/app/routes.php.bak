@@ -35,8 +35,6 @@ Route::post('deleteContact', 				'AdminController@deleteContact');
 
 
 Route::get('listrequest', 					['as'=>'listrequest',			'uses'=>'AdminController@listRequest']);
-Route::post('acceptrequest', 				['as'=>'acceptrequest', 		'uses'=>'AdminController@acceptRequest']);
-Route::post('declinerequest', 				['as'=>'declinerequest', 		'uses'=>'AdminController@declineRequest']);
 Route::get('listpu', 						['as'=>'listpu',				'uses'=>'AdminController@listPU']);
 Route::get('listemergencycodes', 			['as'=>'listemergencycodes',	'uses'=>'AdminController@listEmergencyCodes']);
 Route::get('listreport', 					['as'=>'listreport',			'uses'=>'AdminController@listReport']);

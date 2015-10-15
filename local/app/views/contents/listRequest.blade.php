@@ -62,9 +62,14 @@
 				        		<td>
 				        			<div class="col-md-12">
 					        			<div class="input-group">
-					        				<a data-target="#contactsMarkerModal" data-toggle="modal" data-id="{{ $marker->rescue_units_id }}" href="#" class="contacts btn btn-embossed btn-primary btn-xs">Contacts</a>
-						        			<a class="btn btn-embossed btn-xs btn-info" href="{{ URL::route('editru', $marker->rescue_units_id ) }}">Edit</a>
-											<a class="btn btn-embossed btn-xs btn-danger" href="mapView">Delete</a>
+					        				<form style="float: left" action="{{ URL::route('acceptrequest') }}" method="POST">
+					        					<input type="hidden" name="ru_id" value="{{ $marker->rescue_units_id }}">
+					        					<button type="submit" class="btn btn-embossed btn-xs btn-info">Accept</button>
+					        				</form>
+					        				<form style="float: left" action="{{ URL::route('declinerequest') }}" method="POST">
+					        					<input type="hidden" name="ru_id" value="{{ $marker->rescue_units_id }}">
+					        					<button type="submit" class="btn btn-embossed btn-xs btn-danger">Decline</button>
+					        				</form>
 										</div>
 									</div>
 				        		</td>
@@ -76,7 +81,7 @@
 				      
 				    </table>
 				@else
-				    There are no markers
+				    There are request this time.
 				@endif
 			</div>
 		</div>

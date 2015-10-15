@@ -17,7 +17,7 @@
 
 @section('content')
 	<div id="main">
-		<div class="container" style="padding-top: 40px; padding-bottom: 40px;">
+		<div class="container">
 			{{ $rescue_units }}
 			<div class="row">
 				<div class="col-md-6">

@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 10, 2015 at 02:31 AM
+-- Generation Time: Aug 28, 2015 at 02:10 AM
 -- Server version: 5.6.17
 -- PHP Version: 5.5.12
 
@@ -170,7 +170,7 @@ CREATE TABLE IF NOT EXISTS `ru_contacts` (
   `contact_number` varchar(20) DEFAULT NULL,
   `deviceID` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=13 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=15 ;
 
 -- --------------------------------------------------------
 
@@ -196,7 +196,6 @@ INSERT INTO `ru_ec` (`id`, `ru_id`, `ec_id`) VALUES
 (30, 14, 2),
 (37, 15, 6),
 (36, 15, 5),
-(49, 18, 6),
 (48, 18, 5),
 (47, 18, 3),
 (46, 18, 2),
@@ -204,22 +203,17 @@ INSERT INTO `ru_ec` (`id`, `ru_id`, `ec_id`) VALUES
 (38, 16, 2),
 (43, 17, 3),
 (42, 17, 2),
-(45, 17, 6),
 (44, 17, 5),
 (27, 13, 3),
 (26, 13, 2),
-(33, 14, 6),
 (32, 14, 5),
 (35, 15, 3),
 (34, 15, 2),
-(41, 16, 6),
 (40, 16, 5),
-(29, 13, 6),
 (28, 13, 5),
 (50, 19, 2),
 (51, 19, 3),
 (52, 19, 5),
-(53, 19, 6),
 (68, 25, 4),
 (67, 24, 6),
 (60, 22, 1),

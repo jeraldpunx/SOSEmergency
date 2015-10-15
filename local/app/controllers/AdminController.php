@@ -238,6 +238,13 @@ class AdminController extends \BaseController {
 		DB::table('ru_ec')->where('ru_id', '=', Input::get('marker_id'))->delete();
 		DB::table('ru_contacts')->where('ru_id', '=', Input::get('marker_id'))->delete();
 		DB::table('users')->where('puid_ruid', '=', Input::get('marker_id'))->where('type', '=', 'ru')->delete();
+		if (is_null(DB::table('reports')->where('ru_id', '=', Input::get('marker_id')))) {
+		    DB::table('reports')->where('ru_id', '=', Input::get('marker_id'))->delete();
+		}
+
+		if (is_null(DB::table('reports_queue')->where('ru_id', '=', Input::get('marker_id')))) {
+		    DB::table('reports_queue')->where('ru_id', '=', Input::get('marker_id'))->delete();
+		}
 	}
 
 	public function addContact()
@@ -333,6 +340,7 @@ class AdminController extends \BaseController {
 						->join("rescue_units", "rescue_units.id", "=", "reports.ru_id")
 						->join("person_units", "person_units.id", "=", "reports.pu_id")
 						->join("emergency_codes", "emergency_codes.id", "=", "reports.ec_id")
+						->orderBy('date_reported', 'desc')
 						->get();
 		return View::make('contents.listReport')->with('reports', $reports);
 	}
@@ -343,6 +351,25 @@ class AdminController extends \BaseController {
 								->where('status', '=', 0)
 								->orderBy('rescue_units.id')->get();
 		return View::make('contents.listRequest')->with('markers', $markers);
+	}
+
+	public function acceptRequest()
+	{
+		$requestedRU 				= 	RescueUnit::find(Input::get('ru_id'));
+		$requestedRU->status 		= 	1;
+		$requestedRU->save();
+		return Redirect::back();
+	}
+
+	public function declineRequest()
+	{
+		RescueUnit::find(Input::get('ru_id'))->delete();
+		DB::table('ru_ec')->where('ru_id', '=', Input::get('ru_id'))->delete();
+		DB::table('ru_contacts')->where('ru_id', '=', Input::get('ru_id'))->delete();
+		DB::table('users')->where('puid_ruid', '=', Input::get('ru_id'))->where('type', '=', 'ru')->delete();
+		DB::table('reports')->where('ru_id', '=', Input::get('ru_id'))->delete();
+		DB::table('reports_queue')->where('ru_id', '=', Input::get('ru_id'))->delete();
+		return Redirect::back();
 	}
 
 	public function viewReport($id)

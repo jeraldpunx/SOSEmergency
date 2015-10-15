@@ -38,7 +38,7 @@
 			<nav>
 				<a href="{{ URL::route('realtimemap') }}">Live Map</a>
 				<a href="{{ URL::route('mapview') }}">Manage</a>
-				<a href="{{ URL::route('listrequest') }}">View Request</a>
+				<a href="">View Request</a>
 			</nav>
 		</div>
 	    <div class="container clearfix">
