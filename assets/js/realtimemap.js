@@ -117,24 +117,24 @@ function initialize() {
 	];
 
 	var mapOptions = {
-	center: new google.maps.LatLng(10.3156990, 123.8854370),
-	zoom: 12,
-	mapTypeControl: false,
-	streetViewControl: false,
-	styles: myStyles,
-	panControl: true,
-	panControlOptions: {
-		position: google.maps.ControlPosition.TOP_RIGHT
-	},
-	zoomControl: true,
-	zoomControlOptions: {
-		style: google.maps.ZoomControlStyle.LARGE,
-		position: google.maps.ControlPosition.TOP_LEFT
-	}
+		center: new google.maps.LatLng(10.3156990, 123.8854370),
+		zoom: 12,
+		mapTypeControl: false,
+		streetViewControl: false,
+		styles: myStyles,
+		panControl: true,
+		panControlOptions: {
+			position: google.maps.ControlPosition.TOP_RIGHT
+		},
+		zoomControl: true,
+		zoomControlOptions: {
+			style: google.maps.ZoomControlStyle.LARGE,
+			position: google.maps.ControlPosition.TOP_LEFT
+		}
 	};
 	map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 	infowindow = new google.maps.InfoWindow({
-	maxWidth: 200
+		maxWidth: 200
 	});
 	//Used to remember markers
 	markersArray = {};

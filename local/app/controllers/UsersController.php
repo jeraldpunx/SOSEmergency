@@ -3,7 +3,7 @@
 class UsersController extends \BaseController {
 	public function index()
 	{
-		return "aw";
+		return View::make('contents.login');
 	}
 
 	//REGISTER
